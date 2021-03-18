@@ -1,0 +1,9 @@
+{
+  "name": "@project73/react-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@project73/hardhat": "1.0.0"
+  }
+}
