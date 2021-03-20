@@ -1,4 +1,5 @@
-pragma solidity >=0.6.0 <0.7.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.7.4;
 
 import "hardhat/console.sol";
 import "./ExampleExternalContract.sol"; //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
@@ -44,12 +45,18 @@ contract Staker {
     }
 
     modifier poolIsEnded(uint256 _poolId) {
-        require(pools[_poolId].deadline < now, "This pool is live bro");
+        require(
+            pools[_poolId].deadline < block.timestamp,
+            "This pool is live bro"
+        );
         _;
     }
 
     modifier poolIsLive(uint256 _poolId) {
-        require(pools[_poolId].deadline >= now, "This pool is done bro");
+        require(
+            pools[_poolId].deadline >= block.timestamp,
+            "This pool is done bro"
+        );
         _;
     }
 
@@ -64,7 +71,7 @@ contract Staker {
      * CONSTRUCTOR *
      ***************/
 
-    constructor(address exampleExternalContractAddress) public {
+    constructor(address exampleExternalContractAddress) {
         exampleExternalContract = ExampleExternalContract(
             exampleExternalContractAddress
         );
@@ -84,7 +91,7 @@ contract Staker {
 
         Pool memory newPool;
         newPool.threshold = _threshold * 1 ether;
-        newPool.deadline = now + _deadline * 1 seconds;
+        newPool.deadline = block.timestamp + _deadline * 1 seconds;
         newPool.executed = false;
 
         pools[poolId] = newPool;
@@ -167,7 +174,8 @@ contract Staker {
         poolExists(_poolId)
         returns (uint256)
     {
-        int256 timel = int256(pools[_poolId].deadline) - int256(now);
+        int256 timel =
+            int256(pools[_poolId].deadline) - int256(block.timestamp);
         if (timel > 0) {
             return uint256(timel);
         } else {
