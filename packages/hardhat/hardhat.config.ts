@@ -1,5 +1,4 @@
-const fs = require("fs");
-import "@nomiclabs/hardhat-ethers";
+import * as fs from "fs";
 import "@nomiclabs/hardhat-waffle";
 
 const appNetwork = "localhost";
@@ -8,7 +7,7 @@ const appNetwork = "localhost";
  * ACCOUNT *
  ***********/
 
-function mnemonic(): string {
+let mnemonic = (): string => {
     try {
         return fs.readFileSync("./mnemonic.txt").toString().trim();
     } catch (e) {
@@ -17,7 +16,7 @@ function mnemonic(): string {
         }
     }
     return "";
-}
+};
 
 const infuraAPIKey: string | null = process.env.INFURA_ID;
 const appAccount: string = mnemonic();

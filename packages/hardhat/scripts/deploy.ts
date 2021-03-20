@@ -2,7 +2,8 @@ import { ethers } from "hardhat"
 import { utils } from "ethers";
 import { writeFileSync } from "fs";
 import chalk from "chalk";
-const R = require("ramda");
+import * as R from "ramda";
+
 
 const main = async () => {
     /***************
