@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
 
 const defaultNetwork = "localhost";
@@ -15,6 +16,7 @@ let mnemonic = (): string => {
             console.log("☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.")
         }
     }
+
     return "";
 };
 

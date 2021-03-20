@@ -5,24 +5,36 @@ import chalk from "chalk";
 import * as R from "ramda";
 
 
+/*
+    Script de déploiement des contracts selectionnés sur le defaultNetwork selectionné
+*/
+
 const main = async () => {
     /***************
      * DÉPLOIEMENT *
      ***************/
-    console.log("\n\n 📡 Deploying...\n");
+    console.log(
+        "\n\n 📡",
+        chalk.bgYellow.black("Deploying contracts")
+    );
 
     const exampleExternalContract = await deploy("ExampleExternalContract");
     const stakerContract = await deploy("Staker", [exampleExternalContract.address]);
 
     console.log(
-        " 💾  Artifacts (address, abi, and args) saved to: ",
-        chalk.blue("packages/hardhat/artifacts/"),
-        "\n\n"
+        "\t 💾",
+        chalk.yellow("Artifacts"),
+        "(address, abi, and args) saved to:",
+        "\n\t\t 🚗",
+        chalk.blue("packages/hardhat/artifacts/")
     );
 };
 
 const deploy = async (contractName: string, _args: any[] = [], overrides: {} = {}, libraries: {} = {}) => {
-    console.log(` 🛰  Deploying: ${contractName}`);
+    console.log("\t 🛰",
+        chalk.yellow("Deploying: "),
+        `${contractName}`
+    );
 
     const contractArgs = _args || [];
     const contractArtifacts = await ethers.getContractFactory(contractName, { libraries: libraries });
@@ -32,9 +44,10 @@ const deploy = async (contractName: string, _args: any[] = [], overrides: {} = {
     writeFileSync(`artifacts/${contractName}.address`, deployed.address);
 
     console.log(
-        " 📄",
+        "\t\t 📄",
         chalk.cyan(contractName),
-        "deployed to:",
+        "\n",
+        "\t\t 🏠",
         chalk.magenta(deployed.address),
     );
 
