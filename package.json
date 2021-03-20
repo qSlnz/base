@@ -7,18 +7,18 @@
     "packages/*"
   ],
   "scripts": {
-    "chain": "yarn workspace @scaffold-eth/hardhat chain",
-    "fork": "yarn workspace @scaffold-eth/hardhat fork",
-    "node": "yarn workspace @scaffold-eth/hardhat chain",
-    "test": "yarn workspace @scaffold-eth/hardhat test",
-    "start": "yarn workspace @scaffold-eth/react-app start",
-    "compile": "yarn workspace @scaffold-eth/hardhat compile",
-    "deploy": "yarn workspace @scaffold-eth/hardhat deploy",
-    "watch": "yarn workspace @scaffold-eth/hardhat watch",
-    "accounts": "yarn workspace @scaffold-eth/hardhat accounts",
-    "balance": "yarn workspace @scaffold-eth/hardhat balance",
-    "send": "yarn workspace @scaffold-eth/hardhat send",
-    "account": "yarn workspace @scaffold-eth/hardhat account",
-    "generate": "yarn workspace @scaffold-eth/hardhat generate"
+    "chain": "yarn workspace @project73/hardhat chain",
+    "fork": "yarn workspace @project73/hardhat fork",
+    "node": "yarn workspace @project73/hardhat chain",
+    "test": "yarn workspace @project73/hardhat test",
+    "start": "yarn workspace @project73/react-app start",
+    "compile": "yarn workspace @project73/hardhat compile",
+    "deploy": "yarn workspace @project73/hardhat deploy",
+    "watch": "yarn workspace @project73/hardhat watch",
+    "accounts": "yarn workspace @project73/hardhat accounts",
+    "balance": "yarn workspace @project73/hardhat balance",
+    "send": "yarn workspace @project73/hardhat send",
+    "account": "yarn workspace @project73/hardhat account",
+    "generate": "yarn workspace @project73/hardhat generate"
   }
 }

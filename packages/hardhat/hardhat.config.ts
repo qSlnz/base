@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import "@nomiclabs/hardhat-waffle";
 
-const appNetwork = "localhost";
+const defaultNetwork = "localhost";
 
 /***********
  * ACCOUNT *
@@ -11,7 +11,7 @@ let mnemonic = (): string => {
     try {
         return fs.readFileSync("./mnemonic.txt").toString().trim();
     } catch (e) {
-        if (appNetwork !== "localhost") {
+        if (defaultNetwork !== "localhost") {
             console.log("☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.")
         }
     }
@@ -118,7 +118,7 @@ let appCompilers: any = {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-    appNetwork: appNetwork,
+    defaultNetwork: defaultNetwork,
     networks: networks,
     solidity: appCompilers
 };
