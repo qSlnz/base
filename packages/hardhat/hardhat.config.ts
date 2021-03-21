@@ -1,6 +1,11 @@
-import * as fs from "fs";
-import "@nomiclabs/hardhat-ethers";
+import "@typechain/hardhat";
 import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-ethers";
+import "@typechain/ethers-v5";
+
+import { HardhatUserConfig, NetworksUserConfig, SolidityUserConfig } from "hardhat/types";
+
+import * as fs from "fs";
 
 const defaultNetwork = "localhost";
 
@@ -23,11 +28,13 @@ let mnemonic = (): string => {
 const infuraAPIKey: string | null = process.env.INFURA_ID;
 const appAccount: string = mnemonic();
 
+console.log("infuraAPIKey")
+
 /************
  * NETWORKS *
  ************/
 
-const networks: any = {
+const networks: NetworksUserConfig = {
     localhost: {
         url: "http://localhost:8545",
     },
@@ -80,7 +87,7 @@ const networks: any = {
 /*************
  * COMPILERS *
  *************/
-let appCompilers: any = {
+let appCompilers: SolidityUserConfig = {
     compilers: [
         {
             version: "0.5.5",
@@ -116,14 +123,17 @@ let appCompilers: any = {
  * EXPORT *
  **********/
 
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
-module.exports = {
+const config: HardhatUserConfig = {
     defaultNetwork: defaultNetwork,
     networks: networks,
-    solidity: appCompilers
+    solidity: appCompilers,
+    typechain: {
+        outDir: "artifacts/typechain",
+        target: "ethers-v5"
+    }
 };
+
+export default config;
 
 /*********
  * TASKS *

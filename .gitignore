@@ -1,11 +1,19 @@
-packages/hardhat/*.txt
 **/aws.json
-**/node_modules
+
+# hardhat
+packages/hardhat/*.txt
 packages/hardhat/artifacts
-packages/react-app/src/contracts
 packages/hardhat/cache
+packages/hardhat/typechain
+
+# react-app
+packages/react-app/src/contracts
+
+# subgraph
+packages/subgraph/config/config.json
 
 # dependencies
+**/node_modules
 /node_modules
 /.pnp
 .pnp.js
@@ -26,3 +34,4 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
+

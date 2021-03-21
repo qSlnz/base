@@ -1,8 +1,8 @@
 {
-  "name": "@project73/react-app",
-  "version": "1.0.0",
-  "license": "MIT",
-  "dependencies": {
-    "@project73/hardhat": "1.0.0"
-  }
+    "name": "@project73/react-app",
+    "version": "1.0.0",
+    "license": "MIT",
+    "dependencies": {
+        "@project73/hardhat": "1.0.0"
+    }
 }
