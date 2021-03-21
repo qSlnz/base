@@ -6,8 +6,19 @@ import "@typechain/ethers-v5";
 import { HardhatUserConfig, NetworksUserConfig, SolidityUserConfig } from "hardhat/types";
 
 import * as fs from "fs";
+import * as dotenv from "dotenv";
 
+dotenv.config();
+
+/*****************
+ * SHOULD BE SET *
+ *****************/
+
+// Network use on deploiement
 const defaultNetwork = "localhost";
+
+// Infura ID key if infura provider is use
+const INFURA_API_KEY = process.env.INFURA_ID;
 
 /***********
  * ACCOUNT *
@@ -25,10 +36,7 @@ let mnemonic = (): string => {
     return "";
 };
 
-const infuraAPIKey: string | null = process.env.INFURA_ID;
-const appAccount: string = mnemonic();
-
-console.log("infuraAPIKey")
+const masterAppAccount: string = mnemonic();
 
 /************
  * NETWORKS *
@@ -39,47 +47,47 @@ const networks: NetworksUserConfig = {
         url: "http://localhost:8545",
     },
     rinkeby: {
-        url: "https://rinkeby.infura.io/v3/" + infuraAPIKey,
+        url: "https://rinkeby.infura.io/v3/" + INFURA_API_KEY,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
     kovan: {
-        url: "https://kovan.infura.io/v3/" + infuraAPIKey,
+        url: "https://kovan.infura.io/v3/" + INFURA_API_KEY,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
     mainnet: {
-        url: "https://mainnet.infura.io/v3/" + infuraAPIKey,
+        url: "https://mainnet.infura.io/v3/" + INFURA_API_KEY,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
     ropsten: {
-        url: "https://ropsten.infura.io/v3/" + infuraAPIKey,
+        url: "https://ropsten.infura.io/v3/" + INFURA_API_KEY,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
     goerli: {
-        url: "https://goerli.infura.io/v3/" + infuraAPIKey,
+        url: "https://goerli.infura.io/v3/" + INFURA_API_KEY,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
     xdai: {
         url: 'https://rpc.xdaichain.com/',
         gasPrice: 1000000000,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
     matic: {
         url: 'https://rpc-mainnet.maticvigil.com/',
         gasPrice: 1000000000,
         accounts: {
-            mnemonic: mnemonic(),
+            mnemonic: masterAppAccount,
         },
     },
 }
