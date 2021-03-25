@@ -13,7 +13,6 @@
         "test": "yarn workspace @project73/hardhat test",
         "start": "yarn workspace @project73/react-app start",
         "compile": "yarn workspace @project73/hardhat compile",
-        "deploy": "yarn workspace @project73/hardhat deploy",
         "watch": "yarn workspace @project73/hardhat watch",
         "accounts": "yarn workspace @project73/hardhat accounts",
         "balance": "yarn workspace @project73/hardhat balance",

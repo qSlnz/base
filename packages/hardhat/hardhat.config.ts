@@ -2,12 +2,15 @@ import "@typechain/hardhat";
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
 import "@typechain/ethers-v5";
+import 'hardhat-deploy';
 
 import { HardhatUserConfig, NetworksUserConfig, SolidityUserConfig } from "hardhat/types";
 
 import * as fs from "fs";
 import * as dotenv from "dotenv";
 
+
+/* Handle .env variables in the root of hardhat folder */
 dotenv.config();
 
 /*****************
@@ -36,7 +39,15 @@ let mnemonic = (): string => {
     return "";
 };
 
+
+
 const masterAppAccount: string = mnemonic();
+
+const namedAccounts = {
+    deployer: 0,
+    proxyOwner: 1,
+    admin: '0x5B9d721f482E60efA99e555Cb59c7DBF4Df15Dc7',
+};
 
 /************
  * NETWORKS *
@@ -134,10 +145,22 @@ let appCompilers: SolidityUserConfig = {
 const config: HardhatUserConfig = {
     defaultNetwork: defaultNetwork,
     networks: networks,
+    namedAccounts: namedAccounts,
     solidity: appCompilers,
     typechain: {
         outDir: "artifacts/typechain",
         target: "ethers-v5"
+    },
+    mocha: {
+        timeout: 2000
+    },
+    paths: {
+        artifacts: "artifacts",
+        sources: "contracts",
+        tests: "test",
+        cache: "cache",
+        deploy: "deploy",
+        deployments: "deployments"
     }
 };
 
