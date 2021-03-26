@@ -1,0 +1,206 @@
+body {
+  margin: 0;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/***********
+ * SIDEBAR *
+ ***********/
+
+.wrapper-sidebar {
+  background-color: whitesmoke;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: -webkit-fill-available;
+  width: 8em;
+
+  border: 2px solid orchid;
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    148deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(2, 0, 36, 1) 49%,
+    rgba(2, 9, 53, 1) 65%,
+    rgba(1, 18, 69, 1) 81%,
+    rgba(1, 26, 86, 1) 91%,
+    rgba(0, 35, 102, 1) 100%
+  );
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.sidebar-logo {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.sidebar-logo-image {
+  max-width: 3em;
+  margin-bottom: 0.5em;
+}
+
+.sidebar-item {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.sidebar-item-image {
+  max-width: 3em;
+  margin-bottom: 0.5em;
+}
+
+.sidebar-item-text {
+  color: white;
+  text-transform: uppercase;
+}
+
+/************
+ * LOGINBAR *
+ ************/
+
+.loginbar {
+  background-color: orchid;
+  height: 5em;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.loginbar-address {
+  margin-left: 2.5em;
+  order: 2;
+}
+
+.loginbar-incorrect {
+  order: 1;
+
+  font-size: 1.5em;
+  color: white;
+  background-color: brown;
+
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-left: 2em;
+  margin-right: 2em;
+  height: 50%;
+  min-width: 10em;
+  margin-top: 0.8em;
+
+  border: 2px solid black;
+  border-radius: 4px;
+}
+
+.loginbar-connect {
+  order: 1;
+
+  font-size: 1.5em;
+  color: white;
+  background-color: rgba(0, 35, 102, 1);
+
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-left: 2em;
+  margin-right: 2em;
+  height: 50%;
+  min-width: 10em;
+  margin-top: 0.8em;
+
+  border: 2px solid transparent;
+  border-radius: 4px;
+
+  text-shadow: 1px 1px 2px white;
+  box-shadow: 0px -2px 10px 0px salmon, 0px 2px 10px 0px turquoise, 5px 0px 8px 0px royalblue, -4px 0px 6px 0px yellow;
+}
+
+.loginbar-connect:hover {
+  animation: sidebar-connect-animation 1s alternate infinite;
+  cursor: pointer;
+}
+
+@keyframes sidebar-connect-animation {
+  0% {
+    box-shadow: 0px -2px 10px 0px salmon, 0px 2px 10px 0px turquoise, 5px 0px 8px 0px royalblue, -4px 0px 8px 0px yellow;
+  }
+  100% {
+    box-shadow: 0px -4px 10px 4px salmon, 0px 4px 10px 4px turquoise, 7px 0px 4px 3px royalblue, -4px 0px 8px 4px yellow;
+  }
+}
+
+/**************
+ * MAINSCREEN *
+ **************/
+
+.mainscreen {
+  background-color: whitesmoke;
+  position: fixed;
+  right: 0;
+  width: calc(100vw - 8em - 4px);
+  height: 100%;
+}
+
+.gamescreen {
+  background-color: whitesmoke;
+  position: fixed;
+  right: 0;
+  width: calc(100vw - 20em);
+  height: calc(100vh - 1.5em - 2.5em);
+}
+
+/**********
+ * TOPBAR *
+ **********/
+
+.topbar {
+  background-color: black;
+  border-bottom: 2px solid white;
+  color: white;
+
+  height: 2em;
+  
+  overflow: hidden;
+  white-space: nowrap;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.topbar-animation {
+  margin-top: 0.4em;
+  width: fit-content;
+  animation: topbar-text-animation 40s linear infinite;
+  position: relative;
+}
+
+@keyframes topbar-text-animation {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/*************
+ * BOTTOMBAR *
+ *************/
+
+.bottombar {
+  background: rgba(0, 35, 102, 1);
+  background: linear-gradient(90deg, rgba(0, 35, 102, 1) 0%, rgba(0, 35, 102, 1) 65%, rgba(2, 0, 36, 1) 100%);
+  height: 1.5em;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+}
