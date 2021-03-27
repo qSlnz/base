@@ -1,40 +1,19 @@
 import React from "react";
 
 export default function TopBar() {
+    let message: Array<any> = [];
+
+    for (let index = 0; index < 10; index++) {
+        message.push(<span className="topbar-unit">
+            🔥🔥 New amazing APP 🚀🚀
+                </span>);
+        message.push(<span className="topbar-space">.</span>);
+    }
+
     return (
         <div className="topbar">
             <div className="topbar-animation">
-                <span className="topbar-unit">
-                    Message numéro 1 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 2 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 3 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 4 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 5 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 6 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 7 Message numéro 1
-                </span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span className="topbar-unit">
-                    Message numéro 8 Message numéro 1
-                </span>
+                {message}
             </div>
         </div>
     );

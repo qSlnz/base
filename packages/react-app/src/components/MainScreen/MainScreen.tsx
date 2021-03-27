@@ -1,13 +1,14 @@
+import { API } from "bnc-onboard/dist/src/interfaces";
 import React from "react";
 import LoginBar from "./LoginBar";
 import TopBar from "./TopBar";
 
 
-let MainScreen = () => {
+let MainScreen = ({ onboardLogin }: { onboardLogin: () => Promise<void> }) => {
     return (
         <div className="mainscreen">
             <TopBar />
-            <LoginBar />
+            <LoginBar onboardLogin={onboardLogin} />
         </div>
     )
 }
