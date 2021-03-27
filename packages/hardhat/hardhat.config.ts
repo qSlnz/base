@@ -3,6 +3,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
 import "@typechain/ethers-v5";
 import 'hardhat-deploy';
+import "hardhat-deploy-ethers";
 
 import { HardhatUserConfig, NetworksUserConfig, SolidityUserConfig } from "hardhat/types";
 
@@ -164,6 +165,12 @@ const config: HardhatUserConfig = {
     }
 };
 
+const frontEndPathConfig: { [key: string]: string } = {
+    react: "../react-app/src/contracts",
+    subgraph: "../subgraph/contracts"
+};
+
+export { frontEndPathConfig };
 export default config;
 
 /*********

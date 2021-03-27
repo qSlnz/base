@@ -2344,11 +2344,6 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@symfoni/hardhat-react@^0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@symfoni/hardhat-react/-/hardhat-react-0.1.14.tgz#9bf0e1f4187d3809d440f4c08036dc9f83c693ae"
-  integrity sha512-2vJfvUxoGxUmA22rUZIEcyPl6yDgy93a/DKabByQPYYalCXCSEOgQw8FSKA5xR/rhtutljZxCjkhIndzh5Gyuw==
-
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -2470,10 +2465,10 @@
   dependencies:
     ethers "^5.0.2"
 
-"@typechain/ethers-v5@^6.0.4":
-  version "6.0.4"
-  resolved "https://registry.yarnpkg.com/@typechain/ethers-v5/-/ethers-v5-6.0.4.tgz#b9bb2da36fcb4e10b8249dfb4408667151277010"
-  integrity sha512-m6mLwkwBtjmTfrMdvB+sZgbKSsMkfTCV5g2aqxZJFMyX1b9vLNPyqStmUQ8LaNs6ipCkG6+Q7erXJEkdjoDBSA==
+"@typechain/ethers-v5@^6.0.5":
+  version "6.0.5"
+  resolved "https://registry.yarnpkg.com/@typechain/ethers-v5/-/ethers-v5-6.0.5.tgz#39bbf9baadd0e8d9efad9d16c60152b7cd9a467b"
+  integrity sha512-KJh+EWuxmX1a17fQWS1ba8DCYcqK7UpdbqMZZwyfiv9FQfn8ZQJX17anbkCMOSU8TV3EvRuJ/vFEKGzKnpkO8g==
 
 "@typechain/hardhat@^1.0.1":
   version "1.0.1"
@@ -6616,11 +6611,6 @@ elliptic@6.5.4, elliptic@^6.4.0, elliptic@^6.5.2, elliptic@^6.5.3, elliptic@^6.5
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-emitter-component@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/emitter-component/-/emitter-component-1.1.1.tgz#065e2dbed6959bf470679edabeaf7981d1003ab6"
-  integrity sha1-Bl4tvtaVm/RwZ57avq95gdEAOrY=
-
 emittery@^0.7.1:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/emittery/-/emittery-0.7.2.tgz#25595908e13af0f5674ab419396e2fb394cdfa82"
@@ -8786,10 +8776,10 @@ hardhat-deploy-ethers@^0.3.0-beta.7:
   resolved "https://registry.yarnpkg.com/hardhat-deploy-ethers/-/hardhat-deploy-ethers-0.3.0-beta.7.tgz#860d86b84ed3c4fdef64283ccf1e8d5623454d02"
   integrity sha512-JKMNte6vudu9LSNqgmBtNxc1gfxp3NUcPKVAf/FANHfl9pa/mBGg6hpQO7tD8CLkAbe6f4K5BjyYIPWX3p7MKw==
 
-hardhat-deploy@^0.7.0-beta.48:
-  version "0.7.0-beta.48"
-  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.7.0-beta.48.tgz#33384aaca1f170c9cd162d9c0f0bda1e59ab01fb"
-  integrity sha512-Wn8xRpQdjrNf4fUHdx8ik0/qzccpdn9Ghi3sM7JYZ06/EYM1T48358Dv2MZWZmfI+1ZTlBaA9cLyN1R21+3yUQ==
+hardhat-deploy@^0.7.0-beta.50:
+  version "0.7.0-beta.50"
+  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.7.0-beta.50.tgz#e9e8ae0a6b566303f784aa74311d945cc109b857"
+  integrity sha512-WSt/wQYy4TLgwXZrvC4PNM+zpngX8nldhE8/pZ6B7JxovU9LwLhgqa9pvPST+sOhr7fTuBGrO7XyTVq2TgK6YQ==
   dependencies:
     "@ethersproject/abi" "^5.0.2"
     "@ethersproject/abstract-signer" "^5.0.2"
@@ -8812,10 +8802,10 @@ hardhat-deploy@^0.7.0-beta.48:
     murmur-128 "^0.2.1"
     qs "^6.9.4"
 
-hardhat@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.1.1.tgz#bcfed980019672b57011845a1678f714728d6ee7"
-  integrity sha512-55XMqB5QoeRg3m56rBg0NQgU//GPqOC9t4RbRSU3pdBJGHGXFTUh8fjTPxnWJNu9r72Zju++syGcCkPGwftyvw==
+hardhat@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.1.2.tgz#a2128b71b0fb216ffc978c85a2030835b4e306ea"
+  integrity sha512-42iOheDsDl6Gr7sBfpA0S+bQUIcXSDEUrrqmnFEcBHx9qBoQad3s212y2ODmmkdLt+PqqTM+Mq8N3bZDTdjoLg==
   dependencies:
     "@nomiclabs/ethereumjs-vm" "4.2.2"
     "@sentry/node" "^5.18.1"
@@ -15372,13 +15362,6 @@ stream-to-pull-stream@^1.7.1:
   dependencies:
     looper "^3.0.0"
     pull-stream "^3.2.3"
-
-stream@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/stream/-/stream-0.0.2.tgz#7f5363f057f6592c5595f00bc80a27f5cec1f0ef"
-  integrity sha1-f1Nj8Ff2WSxVlfALyAon9c7B8O8=
-  dependencies:
-    emitter-component "^1.1.1"
 
 strict-uri-encode@^1.0.0:
   version "1.1.0"

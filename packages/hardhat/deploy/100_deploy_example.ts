@@ -18,4 +18,5 @@ const func: DeployFunction = async function ({ getNamedAccounts, deployments }) 
     );
 };
 
+
 export default func;
