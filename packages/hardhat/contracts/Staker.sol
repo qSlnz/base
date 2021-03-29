@@ -47,7 +47,7 @@ contract Staker {
     modifier poolIsEnded(uint256 _poolId) {
         require(
             pools[_poolId].deadline < block.timestamp,
-            "This pool is live brot"
+            "This pool is live bro"
         );
         _;
     }

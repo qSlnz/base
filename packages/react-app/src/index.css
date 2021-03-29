@@ -109,7 +109,7 @@ code {
   padding-bottom: 0.5em;
 
   border: 2px solid transparent;
-  border-radius: 4px;
+  border-radius: 12px;
 }
 
 .loginbar-button:hover {
@@ -282,4 +282,24 @@ span.topbar-space {
   padding: 0.2em;
   padding-top: 0.03em;
   font-family: Quicksand;
+}
+
+/************
+ * APP ZONE *
+ ************/
+
+ .appZone {
+    width: inherit;
+    height: inherit;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.appZone-text {
+  color: white;
+  font-size: 10em;
+  font-family: Quicksand;
+  margin-top: -1em;
 }

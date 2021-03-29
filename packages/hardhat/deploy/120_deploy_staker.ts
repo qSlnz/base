@@ -8,7 +8,6 @@ const func: DeployFunction = async function ({ getNamedAccounts, deployments }) 
 
     let Staker: DeployResult = await deployments.deploy('Staker', {
         from: deployer,
-        proxy: true,
         args: [ExampleExternalContractAddress],
         log: true
     });

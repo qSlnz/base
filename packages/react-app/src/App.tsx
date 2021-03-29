@@ -11,22 +11,26 @@ import TopBar from './components/MainScreen/TopBar';
 import useLookupAddress from './hooks/LookupAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
+import { Staker, Staker__factory } from './contracts/typechain';
+import Staker_ADDRESS from './contracts/Staker.address';
+import Staker_ABI from './contracts/Staker.abi';
 
 /*****************
  * SHOULD BE SET *
  *****************/
 
 // Le network sur lequel tourne l'application
-const appNetwork = NETWORKS.polygon;
+const appNetwork = NETWORKS.localhost;
 
 // Provider vers le mainnet ethereum
 const INFURA_API_KEY = "c6620abc4b344c1d97d7205817a290ce";
 console.log("Infura_KEY: " + INFURA_API_KEY);
-const mainnetProvider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_API_KEY);
 
-let provider: any;
+const mainnetProvider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_API_KEY);
+let localProvider: ethers.providers.JsonRpcProvider | null = new ethers.providers.JsonRpcProvider(appNetwork.rpcUrl);
 
 function App() {
+    const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
     const [address, setAddress] = useState<string>("");
     const [network, setNetwork] = useState<number>(0);
     const [balance, setBalance] = useState<string>("");
@@ -35,8 +39,6 @@ function App() {
     const [onboard, setOnboard] = useState<API>();
     const [notify, setNotify] = useState<any | null>(null);
 
-    const [toAddress, setToAddress] = useState('');
-
     const ens = useLookupAddress(mainnetProvider, address);
 
     useEffect(() => {
@@ -44,19 +46,26 @@ function App() {
             address: setAddress,
             network: setNetwork,
             balance: setBalance,
-            wallet: (wallet: any) => {
+            wallet: async (wallet: any) => {
                 if (wallet.provider) {
                     setWallet(wallet);
 
-                    const ethersProvider = new ethers.providers.Web3Provider(
+                    localProvider = new ethers.providers.Web3Provider(
                         wallet.provider
                     );
 
-                    provider = ethersProvider;
+                    let staker: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI, localProvider.getSigner())) as Staker;
+
+                    console.log("POOL_COUNT");
+                    let count = await staker.poolCount();
+                    await staker.createPool(2, 60);
+                    console.log(count);
+
+
 
                     window.localStorage.setItem('selectedWallet', wallet.name);
                 } else {
-                    provider = null;
+                    localProvider = null;
                     // @ts-ignore
                     setWallet({});
                 }
@@ -87,9 +96,9 @@ function App() {
         }
     }, [onboard]);
 
+    /* Check if the connected network is the network of the app */
     const checkNetwork = () => {
         if (onboard) {
-            console.log("CheckNetwork: actual > " + network + "; wanted > " + appNetwork.chainId);
             return network === appNetwork.chainId;
         }
         return false;
@@ -99,7 +108,7 @@ function App() {
         <div className="App">
             <SideBar />
             <div className="mainscreen">
-                {(onboard && notify) ? "" : <div className="loadingscreen"><div className="loadingscreen-text">Loading</div></div>}
+                {(onboard && notify) && !activeLoadingScreen ? "" : <div className="loadingscreen"><div className="loadingscreen-text">Loading</div></div>}
                 <TopBar />
                 <div className="loginbar">
                     {onboard && notify ? (
@@ -139,6 +148,7 @@ function App() {
                             {wallet.provider && (
                                 <div className="loginbar-disconnect-button"
                                     onClick={async () => {
+                                        setActiveLoadingScreen(true);
                                         await onboard.walletReset();
 
                                         window.localStorage.removeItem(
@@ -155,8 +165,19 @@ function App() {
                         </div>
                     ) : ""}
                 </div>
+                <div className="appZone">
+                    {wallet.provider && checkNetwork() ? (
+                        <div className="appZone-app">
+                            appzone
+                        </div>
+                    ) : (
+                        <div className="appZone-text">
+                            Pooling made easy.
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </div >
     );
 }
 
