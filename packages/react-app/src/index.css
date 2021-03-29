@@ -148,7 +148,19 @@ code {
   color: white;
   font-size: 1.2em;
   text-transform: uppercase;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: Quicksand;
+  font-weight: bold;
+  margin-top: -0.1em;
+}
+
+.loginbar-button.connected .loginbar-button-text {
+  text-transform: none;
+}
+
+.loginbar-button.badnetwork .loginbar-button-text {
+  font-size: 1em;
+  margin-top: 0.05em;
+  text-transform: none;
 }
 
 .loginbar-info {

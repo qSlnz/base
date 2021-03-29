@@ -10,7 +10,7 @@ import { NETWORKS } from './utils/networks';
 import TopBar from './components/MainScreen/TopBar';
 import useLookupAddress from './hooks/LookupAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 
 /*****************
  * SHOULD BE SET *
@@ -90,7 +90,7 @@ function App() {
     const checkNetwork = () => {
         if (onboard) {
             console.log("CheckNetwork: actual > " + network + "; wanted > " + appNetwork.chainId);
-            return network == appNetwork.chainId;
+            return network === appNetwork.chainId;
         }
         return false;
     }
@@ -99,7 +99,7 @@ function App() {
         <div className="App">
             <SideBar />
             <div className="mainscreen">
-                {onboard && notify ? "" : <div className="loadingscreen"><div className="loadingscreen-text">Loading</div></div>}
+                {(onboard && notify) ? "" : <div className="loadingscreen"><div className="loadingscreen-text">Loading</div></div>}
                 <TopBar />
                 <div className="loginbar">
                     {onboard && notify ? (
@@ -122,7 +122,8 @@ function App() {
                                 <div className="loginbar-button badnetwork"
                                     onClick={async () => await onboard.walletCheck()}>
                                     <div className="loginbar-button-text">
-                                        Wrong network
+                                        <FontAwesomeIcon icon={faWaveSquare} />
+                                        &nbsp;&nbsp;&nbsp;Wrong Network
                                     </div>
                                 </div>
                             )}
@@ -130,12 +131,12 @@ function App() {
                             {wallet.provider && checkNetwork() && (
                                 <div className="loginbar-button connected">
                                     <div className="loginbar-button-text">
-                                        {ens.substr(0, 14) || address.substr(0, 14)}
+                                        {ens.substr(0, 1).toUpperCase() + ens.substr(1, 13) || address.substr(0, 7) + "..." + address.substr(address.length - 5, 5)}
                                     </div>
                                 </div>
                             )}
 
-                            {wallet.provider && checkNetwork() && (
+                            {wallet.provider && (
                                 <div className="loginbar-disconnect-button"
                                     onClick={async () => {
                                         await onboard.walletReset();
