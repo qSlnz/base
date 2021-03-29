@@ -4,7 +4,7 @@ import React from "react";
 */
 
 
-let SidebarItem = ({ text, imgsrc }: { text: string, imgsrc: string }) => {
+let SideBarItem = ({ text, imgsrc }: { text: string, imgsrc: string }) => {
     return (
         <div className="sidebar-item">
             <img className="sidebar-item-image" src={imgsrc} alt="" />
@@ -15,4 +15,4 @@ let SidebarItem = ({ text, imgsrc }: { text: string, imgsrc: string }) => {
     )
 }
 
-export default SidebarItem;
+export default SideBarItem;

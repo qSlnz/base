@@ -7,11 +7,11 @@ interface Network {
     price?: number,
     gasPrice?: number,
     faucet?: string
-}
+};
 
 interface Networks {
     [index: string]: Network
-}
+};
 
 const NETWORKS: Networks = {
     localhost: {
@@ -21,8 +21,8 @@ const NETWORKS: Networks = {
         blockExplorer: '',
         rpcUrl: "http://" + window.location.hostname + ":8545",
     },
-    matic: {
-        name: "matic",
+    polygon: {
+        name: "polygon",
         color: '#2bbdf7',
         chainId: 137,
         price: 1,
@@ -34,3 +34,4 @@ const NETWORKS: Networks = {
 };
 
 export { NETWORKS };
+export type { Network, Networks };

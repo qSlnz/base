@@ -13,8 +13,6 @@ const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, cont
 
     let contractInformation: Deployment = await hre.deployments.get(contractName);
 
-    console.log(contractInformation.address);
-
     return true;
 };
 

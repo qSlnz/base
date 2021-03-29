@@ -1,14 +1,15 @@
+import { Wallet } from "ethers/lib/ethers";
 import { API } from "bnc-onboard/dist/src/interfaces";
 import React from "react";
 import LoginBar from "./LoginBar";
 import TopBar from "./TopBar";
 
 
-let MainScreen = ({ onboardLogin }: { onboardLogin: () => Promise<void> }) => {
+let MainScreen = ({ onboard, wallet }: { onboard: API, wallet: Wallet }) => {
     return (
         <div className="mainscreen">
             <TopBar />
-            <LoginBar onboardLogin={onboardLogin} />
+            <LoginBar onboard={onboard} wallet={wallet} />
         </div>
     )
 }

@@ -19,7 +19,7 @@ dotenv.config();
  *****************/
 
 // Network use on deploiement
-const defaultNetwork = "localhost";
+const defaultNetwork = "hardhat";
 
 // Infura ID key if infura provider is use
 const INFURA_API_KEY = process.env.INFURA_ID;
@@ -32,7 +32,8 @@ let mnemonic = (): string => {
     try {
         return fs.readFileSync("./mnemonic.txt").toString().trim();
     } catch (e) {
-        if (defaultNetwork !== "localhost") {
+        // @ts-ignore
+        if (defaultNetwork !== "localhost" && defaultNetwork !== "hardhat") {
             console.log("☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.")
         }
     }
