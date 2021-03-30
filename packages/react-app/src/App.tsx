@@ -2,7 +2,7 @@ import './App.css';
 import { SideBar } from './components';
 import { useEffect, useState } from 'react';
 
-import { ethers, Wallet } from 'ethers';
+import { Contract, ethers, providers, Wallet } from 'ethers';
 import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 
 import { initNotify, initOnboard } from './utils/initOnboard';
@@ -14,6 +14,7 @@ import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 import { Staker, Staker__factory } from './contracts/typechain';
 import Staker_ADDRESS from './contracts/Staker.address';
 import Staker_ABI from './contracts/Staker.abi';
+import Blockies from "react-blockies";
 
 /*****************
  * SHOULD BE SET *
@@ -29,10 +30,20 @@ console.log("Infura_KEY: " + INFURA_API_KEY);
 const mainnetProvider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_API_KEY);
 let localProvider: ethers.providers.JsonRpcProvider | null = new ethers.providers.JsonRpcProvider(appNetwork.rpcUrl);
 
+interface IContractList {
+    Staker: Staker
+};
+
+const contractList: IContractList = {
+    Staker: new ethers.Contract(Staker_ADDRESS, Staker_ABI) as Staker
+};
+
+
 function App() {
     const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
     const [address, setAddress] = useState<string>("");
     const [network, setNetwork] = useState<number>(0);
+    const [isNetworkCorrect, setIsNetworkCorrect] = useState<boolean>(true);
     const [balance, setBalance] = useState<string>("");
     const [wallet, setWallet] = useState<Wallet>(ethers.Wallet.createRandom());
 
@@ -44,7 +55,12 @@ function App() {
     useEffect(() => {
         let subscriptions: Subscriptions = {
             address: setAddress,
-            network: setNetwork,
+            network: async (network: any) => {
+                console.log("POPOPO " + network);
+                setNetwork(network);
+
+                network === appNetwork.chainId ? setIsNetworkCorrect(true) : setIsNetworkCorrect(false);
+            },
             balance: setBalance,
             wallet: async (wallet: any) => {
                 if (wallet.provider) {
@@ -54,13 +70,17 @@ function App() {
                         wallet.provider
                     );
 
-                    let staker: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI, localProvider.getSigner())) as Staker;
+                    contractList.Staker.connect(localProvider.getSigner());
 
-                    console.log("POOL_COUNT");
-                    let count = await staker.poolCount();
-                    await staker.createPool(2, 60);
-                    console.log(count);
+                    // let staker: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI)) as Staker;
+                    // staker = staker.connect(localProvider.getSigner());
 
+                    // await staker.createPool(2, 2);
+
+                    // let staker2: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI)) as Staker;
+                    // staker2.connect(localProvider.getSigner());
+
+                    // await staker2.createPool(2, 2);
 
 
                     window.localStorage.setItem('selectedWallet', wallet.name);
@@ -98,9 +118,14 @@ function App() {
 
     /* Check if the connected network is the network of the app */
     const checkNetwork = () => {
+        console.log("CheckNetwork>");
+
         if (onboard) {
+            console.log("\t\t> " + network + ", " + appNetwork.chainId);
             return network === appNetwork.chainId;
         }
+
+        console.log("\t\t> Bad");
         return false;
     }
 
@@ -127,7 +152,7 @@ function App() {
                                 </div>
                             )}
 
-                            {wallet.provider && !checkNetwork() && (
+                            {wallet.provider && !isNetworkCorrect && (
                                 <div className="loginbar-button badnetwork"
                                     onClick={async () => await onboard.walletCheck()}>
                                     <div className="loginbar-button-text">
@@ -137,10 +162,13 @@ function App() {
                                 </div>
                             )}
 
-                            {wallet.provider && checkNetwork() && (
+                            {wallet.provider && isNetworkCorrect && (
                                 <div className="loginbar-button connected">
                                     <div className="loginbar-button-text">
                                         {ens.substr(0, 1).toUpperCase() + ens.substr(1, 13) || address.substr(0, 7) + "..." + address.substr(address.length - 5, 5)}
+                                        <div className="loginbar-button-blockie">
+                                            <Blockies seed={address} />
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -166,8 +194,8 @@ function App() {
                     ) : ""}
                 </div>
                 <div className="appZone">
-                    {wallet.provider && checkNetwork() ? (
-                        <div className="appZone-app">
+                    {wallet.provider && isNetworkCorrect ? (
+                        <div className="appZone-createPool">
                             appzone
                         </div>
                     ) : (
@@ -179,7 +207,40 @@ function App() {
             </div>
         </div >
     );
-}
+};
+
+// @ts-ignore
+// if (typeof window.ethereum !== 'undefined') {
+//     console.log('MetaMask is installed!');
+//     // @ts-ignore
+//     interface AddEthereumChainParameter {
+//         chainId: string; // A 0x-prefixed hexadecimal string
+//         chainName: string;
+//         nativeCurrency: {
+//             name: string;
+//             symbol: string; // 2-6 characters long
+//             decimals: 18;
+//         };
+//         rpcUrls: string[];
+//         blockExplorerUrls?: string[];
+//         iconUrls?: string[]; // Currently ignored.
+//     }
+
+//     let a: AddEthereumChainParameter = {
+//         chainId: "0x89",
+//         chainName: "polygon",
+//         nativeCurrency: {
+//             name: "Matic",
+//             symbol: "Matic",
+//             decimals: 18
+//         },
+//         rpcUrls: ["https://rpc-mainnet.maticvigil.com"],
+//         blockExplorerUrls: ["https://explorer-mainnet.maticvigil.com//"]
+//     };
+//     // @ts-ignore
+//     window.ethereum.request({ method: 'wallet_addEthereumChain', params: [a] });
+// }
+
 
 // const walletChecks = [
 //     { checkName: 'derivationPath' },

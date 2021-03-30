@@ -117,6 +117,10 @@ code {
 }
 
 .loginbar-button.badnetwork {
+  background-color: #C63E3E;
+}
+
+.loginbar-button.badnetwork:hover {
   background-color: brown;
 }
 
