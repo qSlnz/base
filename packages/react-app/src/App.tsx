@@ -1,8 +1,8 @@
 import './App.css';
-import { SideBar } from './components';
+import { SideBar, CreatePoolInput } from './components';
 import { useEffect, useState } from 'react';
 
-import { Contract, ethers, providers, Wallet } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 
 import { initNotify, initOnboard } from './utils/initOnboard';
@@ -11,10 +11,9 @@ import TopBar from './components/MainScreen/TopBar';
 import useLookupAddress from './hooks/LookupAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
-import { Staker, Staker__factory } from './contracts/typechain';
-import Staker_ADDRESS from './contracts/Staker.address';
-import Staker_ABI from './contracts/Staker.abi';
 import Blockies from "react-blockies";
+import { contracts } from './contracts';
+import { connectAllContracts } from './contracts/Contracts';
 
 /*****************
  * SHOULD BE SET *
@@ -27,17 +26,9 @@ const appNetwork = NETWORKS.localhost;
 const INFURA_API_KEY = "c6620abc4b344c1d97d7205817a290ce";
 console.log("Infura_KEY: " + INFURA_API_KEY);
 
-const mainnetProvider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_API_KEY);
-let localProvider: ethers.providers.JsonRpcProvider | null = new ethers.providers.JsonRpcProvider(appNetwork.rpcUrl);
-
-interface IContractList {
-    Staker: Staker
-};
-
-const contractList: IContractList = {
-    Staker: new ethers.Contract(Staker_ADDRESS, Staker_ABI) as Staker
-};
-
+export const mainnetProvider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_API_KEY);
+const localProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(appNetwork.rpcUrl);
+let localSigner: ethers.providers.JsonRpcSigner;
 
 function App() {
     const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
@@ -50,7 +41,7 @@ function App() {
     const [onboard, setOnboard] = useState<API>();
     const [notify, setNotify] = useState<any | null>(null);
 
-    const ens = useLookupAddress(mainnetProvider, address);
+    const ens = useLookupAddress(address);
 
     useEffect(() => {
         let subscriptions: Subscriptions = {
@@ -66,11 +57,26 @@ function App() {
                 if (wallet.provider) {
                     setWallet(wallet);
 
-                    localProvider = new ethers.providers.Web3Provider(
+                    localSigner = new ethers.providers.Web3Provider(
                         wallet.provider
-                    );
+                    ).getSigner();
 
-                    contractList.Staker.connect(localProvider.getSigner());
+                    connectAllContracts(localSigner);
+
+                    contracts.Staker.createPool(5, 8);
+
+                    // contractListKey.forEach((key) => {
+                    //     let temp = typeof contractList[key];
+                    //     contractList[key] = contractList[key].connect(localSigner.getSigner());
+                    // })
+
+
+
+                    // for (let key in contractList) {
+                    //     contractList[key as keyof IContractList] = contractList[key as keyof IContractList].connect(localSigner.getSigner()) as Staker;
+                    // }
+
+
 
                     // let staker: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI)) as Staker;
                     // staker = staker.connect(localProvider.getSigner());
@@ -85,7 +91,6 @@ function App() {
 
                     window.localStorage.setItem('selectedWallet', wallet.name);
                 } else {
-                    localProvider = null;
                     // @ts-ignore
                     setWallet({});
                 }
@@ -164,11 +169,13 @@ function App() {
 
                             {wallet.provider && isNetworkCorrect && (
                                 <div className="loginbar-button connected">
-                                    <div className="loginbar-button-text">
-                                        {ens.substr(0, 1).toUpperCase() + ens.substr(1, 13) || address.substr(0, 7) + "..." + address.substr(address.length - 5, 5)}
-                                        <div className="loginbar-button-blockie">
-                                            <Blockies seed={address} />
-                                        </div>
+                                    <div className="loginbar-button-connect-wrapper">
+                                        <span className="loginbar-button-address">
+                                            {ens.substr(0, 1).toUpperCase() + ens.substr(1, 11) || address.substr(0, 6) + "..." + address.substr(address.length - 4, 4)}
+                                        </span>
+                                        <span className="loginbar-button-identicon">
+                                            <Blockies seed={address} size={6} bgColor="white" color="black" />
+                                        </span>
                                     </div>
                                 </div>
                             )}
@@ -194,9 +201,9 @@ function App() {
                     ) : ""}
                 </div>
                 <div className="appZone">
-                    {wallet.provider && isNetworkCorrect ? (
+                    {wallet.provider && network && isNetworkCorrect ? (
                         <div className="appZone-createPool">
-                            appzone
+                            <CreatePoolInput />
                         </div>
                     ) : (
                         <div className="appZone-text">

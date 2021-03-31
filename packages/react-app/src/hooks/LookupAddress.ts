@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
-import { useLocalStorage } from ".";
-
+import { mainnetProvider } from "../App";
 
 const lookupAddress = async (provider: ethers.providers.JsonRpcProvider, address: string) => {
     try {
@@ -10,6 +9,7 @@ const lookupAddress = async (provider: ethers.providers.JsonRpcProvider, address
         // We then manually ensure that the reported ens name resolves to address
         const reportedName = await provider.lookupAddress(address);
         const resolvedAddress = await provider.resolveName(reportedName);
+
         if (getAddress(address) === getAddress(resolvedAddress)) {
             return reportedName;
         }
@@ -19,12 +19,12 @@ const lookupAddress = async (provider: ethers.providers.JsonRpcProvider, address
     return "";
 };
 
-const useLookupAddress = (provider: ethers.providers.JsonRpcProvider, address: string) => {
+const useLookupAddress = (address: string) => {
     const [ensName, setEnsName] = useState(address);
 
     useEffect(() => {
-        if (provider) {
-            lookupAddress(provider, address).then((name) => {
+        if (mainnetProvider) {
+            lookupAddress(mainnetProvider, address).then((name) => {
                 setEnsName(name)
             });
         }

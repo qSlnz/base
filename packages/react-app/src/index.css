@@ -116,13 +116,9 @@ code {
   cursor: pointer;
 }
 
-.loginbar-button.badnetwork {
-  background-color: #C63E3E;
-}
-
-.loginbar-button.badnetwork:hover {
-  background-color: brown;
-}
+/*
+  Button connexion
+*/
 
 .loginbar-button.connexion {
   background-color: rgba(0, 35, 102, 1);
@@ -143,10 +139,6 @@ code {
   }
 }
 
-.loginbar-button.connected {
-  background-color: #3CB371;
-  text-transform: none;
-}
 
 .loginbar-button-text {
   color: white;
@@ -157,8 +149,42 @@ code {
   margin-top: -0.1em;
 }
 
-.loginbar-button.connected .loginbar-button-text {
+/*
+  Button connected
+*/
+
+.loginbar-button.connected {
+  background-color: #3CB371;
   text-transform: none;
+  display: inline-block;
+}
+
+.loginbar-button-address {
+  color: white;
+  font-size: 1.2em;
+  font-family: Quicksand;
+  font-weight: bold;
+  margin-top: -0.1em;
+}
+
+.loginbar-button-identicon {
+  float: right;
+}
+
+.identicon {
+  border-radius: 50%;
+}
+
+/*
+  Button wrong network
+*/
+
+.loginbar-button.badnetwork {
+  background-color: #C63E3E;
+}
+
+.loginbar-button.badnetwork:hover {
+  background-color: brown;
 }
 
 .loginbar-button.badnetwork .loginbar-button-text {
@@ -167,14 +193,9 @@ code {
   text-transform: none;
 }
 
-.loginbar-info {
-  display: flex;
-}
-
-.loginbar-info-address {
-  color: white;
-  order: 2;
-}
+/*
+  Button disconnection
+*/
 
 .loginbar-disconnect-button {
   order: 2;

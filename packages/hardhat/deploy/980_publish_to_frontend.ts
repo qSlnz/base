@@ -5,6 +5,61 @@ import { frontEndPathConfig } from '../hardhat.config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { copySync } from 'fs-extra';
 
+const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) => {
+    // build import
+    let contractsFile = "import { ethers } from 'ethers';\nimport { ";
+
+    contractNameList.forEach((contractName) => {
+        contractsFile += contractName + "Data, ";
+    });
+
+    contractsFile += " } from '.';\nimport { ";
+
+    contractNameList.forEach((contractName) => {
+        contractsFile += contractName + ", ";
+    });
+
+    contractsFile += " } from './typechain';\n\n";
+
+    // build interface
+    contractsFile += "interface IContractList {";
+
+    contractNameList.forEach((contractName) => {
+        contractsFile += "\n\t" + contractName + ": " + contractName + ",";
+    });
+
+    contractsFile += "\n};\n\n";
+
+    // build contracts variable
+
+    contractsFile += "const contracts: IContractList = {";
+
+    contractNameList.forEach((contractName) => {
+        contractsFile += "\n\t" + contractName + ": new ethers.Contract(" + contractName + "Data.address, " + contractName + "Data.abi) as " + contractName + ",";
+    });
+
+    contractsFile += "\n};\n\n";
+
+    // build connectAllContracts function
+
+    contractsFile += "const connectAllContracts = (signer: ethers.providers.JsonRpcSigner) => {";
+
+    contractNameList.forEach((contractName) => {
+        contractsFile += "\n\t" + "contracts." + contractName + " = contracts." + contractName + ".connect(signer);"
+    });
+
+    contractsFile += "\n};\n\n";
+
+    // export
+
+    contractsFile += "export { connectAllContracts };\n"
+    contractsFile += "export default contracts;";
+
+    console.log(contractsFile);
+    writeFileSync(`${frontEndPathConfig["react"]}/Contracts.ts`, contractsFile);
+};
+
+// publish address & abi in one ts file and export it to react frontend
 const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, contractName: string): Promise<boolean> => {
     console.log(
         "\t 🚢",
@@ -13,15 +68,13 @@ const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, cont
         chalk.cyan(contractName)
     );
 
+    console.log(contractName);
+
     let contractInformation: Deployment = await hre.deployments.get(contractName);
 
-    let toExportABIVariableName = contractName + "_ABI";
-    let toExportABI = "const " + toExportABIVariableName + " = " + JSON.stringify(contractInformation.abi) + "; export default " + toExportABIVariableName + ";";
-    let toExportAddressVariableName = contractName + "_ADDRESS";
-    let toExportAddress = "const " + toExportAddressVariableName + " = " + JSON.stringify(contractInformation.address) + "; export default " + toExportAddressVariableName + ";";
+    let toExportData = "const " + contractName + "Data={address:" + JSON.stringify(contractInformation.address) + ",abi:'" + JSON.stringify(contractInformation.abi) + "'};export default " + contractName + "Data;";
 
-    writeFileSync(`${frontEndPathConfig["react"]}/${contractName}.abi.ts`, toExportABI);
-    writeFileSync(`${frontEndPathConfig["react"]}/${contractName}.address.ts`, toExportAddress);
+    writeFileSync(`${frontEndPathConfig["react"]}/${contractName}.data.ts`, toExportData);
 
     return true;
 };
@@ -42,16 +95,26 @@ const func: DeployFunction = async function (hre) {
         }
     }
 
+    let contractsList: string[] = [];
+    for (let contractName in await hre.deployments.all()) {
+        contractsList.push(contractName);
+    }
+
+    console.log(contractsList);
     let indexFile = "";
 
     // copy abi/address of deployed contracts
-    for (let contractName in await hre.deployments.all()) {
+    contractsList.forEach((contractName) => {
         publishDeploymentInformation(hre, contractName);
 
-        indexFile = indexFile + "export { default as " + contractName + "_ADDRESS " + " } from './" + contractName + ".address" + "';";
-    }
+        // build index.ts file to easily access data
+        indexFile += "export { default as " + contractName + "Data " + " } from './" + contractName + ".data" + "';\n";
+    });
 
-    //writeFileSync(`${frontEndPathConfig["react"]}/index.ts`, indexFile);
+    indexFile += "export { default as contracts } from './Contracts';\n";
+
+    buildContractsUniqueAccessPointFile(contractsList);
+    writeFileSync(`${frontEndPathConfig["react"]}/index.ts`, indexFile);
 
     console.log(
         "\t 🚢",
