@@ -6,6 +6,7 @@ import Notify from 'bnc-notify'
 let blocknativeId = "16b95b38-9869-4d58-b978-82322a52ff6d";
 
 export function initOnboard(subscriptions: Subscriptions, appNetwork: Network): API {
+    console.log("On crée le wallet onboard");
     let onboard = Onboard({
         dappId: blocknativeId,
         networkId: appNetwork.chainId,

@@ -23,39 +23,40 @@ const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) =
 
     // build interface
     contractsFile += "interface IContractList {";
-
     contractNameList.forEach((contractName) => {
-        contractsFile += "\n\t" + contractName + ": " + contractName + ",";
+        ["Reader", "Writer"].forEach((option) => {
+            contractsFile += `\n\t${contractName}${option}: ${contractName},`;
+        })
     });
 
     contractsFile += "\n};\n\n";
 
     // build contracts variable
-
     contractsFile += "const contracts: IContractList = {";
 
     contractNameList.forEach((contractName) => {
-        contractsFile += "\n\t" + contractName + ": new ethers.Contract(" + contractName + "Data.address, " + contractName + "Data.abi) as " + contractName + ",";
+        ["Reader", "Writer"].forEach((option) => {
+            contractsFile += `\n\t${contractName}${option}: new ethers.Contract(${contractName}Data.address, ${contractName}Data.abi) as ${contractName},`;
+
+        })
     });
 
     contractsFile += "\n};\n\n";
 
     // build connectAllContracts function
+    [["Reader", "Provider"], ["Writer", "Signer"]].forEach((option) => {
+        contractsFile += `const connectAllContracts${option[0]} = (${option[1]}: ethers.providers.JsonRpc${option[1]}) => {`;
 
-    contractsFile += "const connectAllContracts = (signer: ethers.providers.JsonRpcSigner) => {";
+        contractNameList.forEach((contractName) => {
+            contractsFile += `\n\tcontracts.${contractName}${option[0]} = contracts.${contractName}${option[0]}.connect(${option[1]});`
+        });
 
-    contractNameList.forEach((contractName) => {
-        contractsFile += "\n\t" + "contracts." + contractName + " = contracts." + contractName + ".connect(signer);"
+        contractsFile += "\n};\n\n";
+        contractsFile += `export { connectAllContracts${option[0]} };\n\n`;
     });
 
-    contractsFile += "\n};\n\n";
-
-    // export
-
-    contractsFile += "export { connectAllContracts };\n"
+    // default export
     contractsFile += "export default contracts;";
-
-    console.log(contractsFile);
     writeFileSync(`${frontEndPathConfig["react"]}/Contracts.ts`, contractsFile);
 };
 

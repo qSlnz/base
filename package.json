@@ -8,7 +8,7 @@
     ],
     "scripts": {
         "chain": "yarn workspace @project73/hardhat chain",
-	"deploy": "yarn workspace @project73/hardhat deploy",
+        "deploy": "yarn workspace @project73/hardhat deploy",
         "fork": "yarn workspace @project73/hardhat fork",
         "node": "yarn workspace @project73/hardhat chain",
         "test": "yarn workspace @project73/hardhat test",

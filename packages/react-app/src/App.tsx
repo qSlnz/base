@@ -2,7 +2,7 @@ import './App.css';
 import { SideBar, CreatePool, Counter } from './components';
 import React, { useEffect, useState } from 'react';
 
-import { ethers, Wallet } from 'ethers';
+import { ethers, providers, Wallet } from 'ethers';
 import { API as OnboardApi, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import { API as NotifyAPI } from 'bnc-notify/dist/types/notify';
 
@@ -15,48 +15,50 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 import Blockies from "react-blockies";
 import { contracts } from './contracts';
-import { connectAllContracts } from './contracts/Contracts';
-
+import { connectAllContractsReader, connectAllContractsWriter } from './contracts/Contracts';
+import GetPreviousWallet from './hooks/GetPreviousWallet';
+import Pool from './utils/type';
 
 /*****************
- * SHOULD BE SET *
+ * MUST BE SET *
  *****************/
 
-interface Pool {
-    threshold: number,
-    deadline: number,
-    totalStaked: number,
-    executed: boolean
-};
-
-// Le network sur lequel tourne l'application
+// Network where the application is running
+// Set manually to avoid mistake
+// TODO: check the correspondance with the current hardhat network
 const appNetwork = NETWORKS.localhost;
 
-// Provider vers le mainnet ethereum
+// Provider linked to mainnet
 const INFURA_API_KEY = "c6620abc4b344c1d97d7205817a290ce";
-console.log("Infura_KEY: " + INFURA_API_KEY);
-
 export const mainnetProvider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_API_KEY);
-const localProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(appNetwork.rpcUrl);
-let localSigner: ethers.providers.JsonRpcSigner;
+
+// Provider linked to appnet
+export const localProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(appNetwork.rpcUrl);
+connectAllContractsReader(localProvider);
+
+/*******
+ * APP *
+ *******/
 
 function App() {
-    // Data ethereum
+    // application datas
     const [pools, setPools] = useState<Array<Pool>>([]);
-    const [remainingTime, setRemainingTime] = useState<Array<number>>([]);
 
-    const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
+    // network datas
     const [address, setAddress] = useState<string>("");
     const [network, setNetwork] = useState<number>(0);
-    const [isNetworkCorrect, setIsNetworkCorrect] = useState<boolean>(true);
     const [balance, setBalance] = useState<string>("");
     const [wallet, setWallet] = useState<Wallet>(ethers.Wallet.createRandom());
-
     const [onboard, setOnboard] = useState<OnboardApi>();
-    //const [notify, setNotify] = useState<NotifyAPI>(initNotify(appNetwork));
-
     const ens = useLookupAddress(address);
 
+    // UI datas
+    const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
+    const [isNetworkCorrect, setIsNetworkCorrect] = useState<boolean>(true);
+
+    GetPreviousWallet(onboard);
+
+    // handle user wallet peering using onboard.js, set signer
     useEffect(() => {
         let subscriptions: Subscriptions = {
             address: async (address: any) => {
@@ -74,11 +76,11 @@ function App() {
                 if (wallet.provider) {
                     setWallet(wallet);
 
-                    localSigner = new ethers.providers.Web3Provider(
+                    let localSigner = new ethers.providers.Web3Provider(
                         wallet.provider
                     ).getSigner();
 
-                    connectAllContracts(localSigner);
+                    connectAllContractsWriter(localSigner);
 
                     window.localStorage.setItem('selectedWallet', wallet.name);
                 } else {
@@ -93,51 +95,86 @@ function App() {
         setOnboard(onboard);
     }, []);
 
-    useEffect(() => {
-        const previouslySelectedWallet = window.localStorage.getItem(
-            'selectedWallet'
-        );
+    let addNewPool = async (poolId: number) => {
+        let res = await contracts.StakerReader.pools(poolId);
 
-        if (previouslySelectedWallet && onboard) {
-            const loadOnboardWallet = async () => {
-                const walletSelected = await onboard.walletSelect(previouslySelectedWallet);
+        const remainingTime = parseInt(res.deadline.toString()) - Math.round(Date.now() / 1000) < 0 ? 0 : parseInt(res.deadline.toString()) - Math.round(Date.now() / 1000);
 
-                if (walletSelected) {
-                    await onboard.walletCheck();
-                }
-            };
+        let newPool: Pool = {
+            poolId: poolId,
+            threshold: parseFloat(ethers.utils.formatEther(res.threshold)),
+            totalStaked: parseFloat(ethers.utils.formatEther(res.totalStaked)),
+            deadline: parseInt(res.deadline.toString()),
+            executed: res.executed,
+            remainingTime: remainingTime
+        };
 
-            loadOnboardWallet();
-        }
-    }, [onboard]);
+        return newPool;
+    };
 
+    // when wallet + network is ready > add existing pools + event connection (new pool, new stake, pool execution)
     useEffect(() => {
         const getPools = async () => {
-            let poolCount = await contracts.Staker.poolCount();
-            let poolList: Array<Pool> = [];
-            let remainingTime: Array<number> = [];
+            let poolCount = await contracts.StakerReader.poolCount();
+            let newPools: Array<Pool> = [];
 
             for (let poolId = 0; poolCount.gt(poolId); poolId++) {
-                let res = await contracts.Staker.pools(poolId);
-
-                let newPool: Pool = {
-                    threshold: parseFloat(ethers.utils.formatEther(res.threshold)),
-                    totalStaked: parseFloat(res.totalStaked.toString()),
-                    deadline: parseInt(res.deadline.toString()),
-                    executed: res.executed
-                }
-
-                remainingTime.push(parseInt(res.deadline.toString()) - Math.round((Date.now() / 1000)));
-                poolList.push(newPool);
+                newPools.push(await addNewPool(poolId));
             }
 
-            setRemainingTime(remainingTime);
-            setPools(poolList);
+            setPools(prevPools => prevPools.concat(newPools));
+
+            let creationPoolEventFilter = contracts.StakerReader.filters.PoolCreation(null, null);
+
+            contracts.StakerReader.on(creationPoolEventFilter, async (address, poolId, event) => {
+                console.log("Event: creationPoolEventFilter: " + address + ", " + poolId + ", " + event);
+
+                let id = parseInt(poolId.toString());
+                let newPool = await addNewPool(id);
+
+                setPools(prevPools => {
+                    /* handle case double add */
+                    if (!prevPools[id]) {
+                        return prevPools.concat(newPool)
+                    } else {
+                        return prevPools;
+                    }
+                });
+            });
+
+            let stakeEventFilter = contracts.StakerReader.filters.Stake(null, null, null);
+
+            contracts.StakerReader.on(stakeEventFilter, async (poolId, staker, amount) => {
+                console.log("Event: stakeEventFilter: " + poolId + ", " + staker + ", " + amount);
+                const i = parseInt(poolId.toString());
+
+                setPools(prevPools => {
+                    const newPoolsList = [...prevPools];
+                    let newPool = newPoolsList[i];
+                    newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
+                    newPoolsList[i] = newPool;
+                    return newPoolsList;
+                });
+            });
+
+            let executeEventFilter = contracts.StakerReader.filters.PoolExecuted(null);
+
+            contracts.StakerReader.on(executeEventFilter, async (poolId) => {
+                console.log("Event: executeEventFilter: " + poolId);
+                const i = parseInt(poolId.toString());
+
+                setPools(prevPools => {
+                    const newPoolsList = [...prevPools];
+                    let newPool = newPoolsList[i];
+                    newPool.executed = true;
+                    newPoolsList[i] = newPool;
+                    return newPoolsList;
+                });
+            });
         };
 
         if (address && checkNetwork() && pools.length == 0) {
-            console.log("On populate la population");
-
+            console.log("Retrieve all pools created");
             getPools();
         } else {
             console.log("On populate PAS la population");
@@ -145,22 +182,18 @@ function App() {
     }, [address, network]);
 
     useEffect(() => {
-        console.log("JPP");
-
         if (pools.length == 0) {
             return;
         }
 
-        console.log("nique ta pute de mère");
-
         const timer = setInterval(() => {
-            // let newTime: Array<number> = [...remainingTime];
+            console.log("Decrease remaining Time");
+            setPools(pools => pools.map(pool => {
+                const updatePool: Pool = pool;
+                updatePool.remainingTime = updatePool.remainingTime - 1 <= 0 ? 0 : updatePool.remainingTime - 1;
+                return updatePool;
+            }));
 
-            // for (let i = 0; i < newTime.length; i++) {
-            //     newTime[i] = newTime[i] + 1;
-            // }
-
-            setRemainingTime(remainingTime => remainingTime.map(el => el + 1));
         }, 1000);
 
         return () => {
@@ -250,27 +283,69 @@ function App() {
                         </div>
                     ) : ""}
                 </div>
-                {wallet.provider && network && isNetworkCorrect && remainingTime ? (
+                {wallet.provider && network && isNetworkCorrect ? (
                     <div className="appZone">
                         <CreatePool />
-                        {pools.map((value, index) => {
+                        {pools.slice(0).reverse().map((pool) => {
                             return (
-                                <div className="dapp-container" key={index}>
+                                <div className="dapp-container" key={pool.poolId}>
                                     <div className="dapp-box unit">
                                         <div className="dapp-unitpool-title">
-                                            Pool #{index}
+                                            Pool #{pool.poolId}
                                         </div>
                                         <hr></hr>
                                         <div className="dapp-unitpool-data">
-                                            Total staked in the pool: {value.totalStaked}
+                                            Total staked in the pool: {pool.totalStaked} eth
                                         </div>
                                         <div className="dapp-unitpool-data">
-                                            Value to reach: {value.threshold}
+                                            Value to reach: {pool.threshold} eth
                                         </div>
-                                        <Counter data={remainingTime} index={index} />
-                                        <div className="dapp-unitpool-data">
-                                            {value.executed}
-                                        </div>
+                                        <Counter data={pool.remainingTime} />
+                                        {pool.remainingTime <= 0 && pool.threshold > pool.totalStaked &&
+                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "brown" }}>
+                                                Pool close without reaching the minimal required amount
+                                            </div>
+                                        }
+                                        {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && !pool.executed &&
+                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "orange" }}>
+                                                The pool is a success ! You can know send the collected amount
+                                            </div>
+                                        }
+                                        {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && !pool.executed &&
+                                            <div className="dapp-unitpool-button execute" onClick={
+                                                async () => {
+                                                    try {
+                                                        await contracts.StakerWriter.execute(pool.poolId);
+                                                    } catch {
+                                                    }
+                                                }
+                                            }>
+                                                Send pool fund
+                                            </div>
+                                        }
+                                        {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && pool.executed &&
+                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
+                                                The pool is a success and the colleted amount has been sent
+                                            </div>
+                                        }
+                                        {pool.remainingTime > 0 &&
+                                            <div className="dapp-unitpool-data">
+                                                The pool is open, you can contribute if you feels generous :)
+                                            </div>
+                                        }
+                                        {pool.remainingTime > 0 &&
+                                            <div className="dapp-unitpool-button contribute" onClick={
+                                                async () => {
+                                                    try {
+                                                        await contracts.StakerWriter.stake(pool.poolId, { value: ethers.utils.parseEther("1") });
+                                                    } catch (e) {
+                                                        console.log(e);
+                                                    }
+                                                }
+                                            }>
+                                                Contribute 1 ether
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             )

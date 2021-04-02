@@ -410,8 +410,37 @@ span.topbar-space {
 }
 
 .dapp-unitpool-data {
+  border-radius: 10px;
   font-size: 1.5em;
   margin-bottom: 1em;
-  border: 1px solid white;
   padding: 0.2em;
+  background-color: rgba(1, 26, 86, 1);
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.4);
+}
+
+.dapp-unitpool-button {
+    font-size: 1.3em;
+    background-color: grey;
+    border-radius: 12px;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    cursor: pointer;
+    width: 50%;
+    box-shadow: 1px 5px 10px rgba(0,0,0,0.5);
+}
+
+.dapp-unitpool-button.contribute {
+    background-color: #3CB371;
+}
+
+.dapp-unitpool-button.contribute:hover {
+    background-color: green;
+}
+
+.dapp-unitpool-button.execute {
+  background-color: orange;
+}
+
+.dapp-unitpool-button.execute:hover {
+  background-color: coral;
 }

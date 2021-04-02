@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.7.4;
+pragma solidity >=0.7.4;
 
 import "hardhat/console.sol";
 import "./ExampleExternalContract.sol"; //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
@@ -33,7 +33,7 @@ contract Staker {
 
     event Stake(uint256 poolId, address staker, uint256 amount);
     event PoolCreation(address staker, uint256 poolId);
-    event PoolEnd(uint256 poolId);
+    event PoolExecuted(uint256 poolId);
 
     /*************
      * MODIFIERS *
@@ -86,6 +86,8 @@ contract Staker {
         public
         returns (uint256)
     {
+        require(_deadline > 0);
+
         uint256 poolId = poolCount;
         poolCount++;
 
@@ -95,6 +97,8 @@ contract Staker {
         newPool.executed = false;
 
         pools[poolId] = newPool;
+
+        emit PoolCreation(msg.sender, poolId);
 
         return poolId;
     }
@@ -153,6 +157,8 @@ contract Staker {
         require(success, "Sending money failed");
 
         pools[_poolId].executed = true;
+
+        emit PoolExecuted(_poolId);
     }
 
     function isParticipatingTo(uint256 _poolId, address _addr)
