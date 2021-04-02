@@ -367,6 +367,7 @@ span.topbar-space {
 }
 
 .dapp-createtool-label-text {
+  font-size: 1.1em;
   margin-bottom: 0.5em;
 }
 
@@ -380,14 +381,14 @@ span.topbar-space {
 
 .dapp-createtool-error {
   color: red;
-  margin-top: 0.5em;
+  margin-top: 0.7em;
 }
 
 .dapp-createpool-button {
   background-color: royalblue;
   color: white;
   font-family: 'Quicksand';
-  font-size: 1.6em;
+  font-size: 1.9em;
   border-radius: 8px;
   border: none;
   padding: 0.2em;
@@ -398,7 +399,7 @@ span.topbar-space {
 }
 
 .dapp-createpool-button:hover {
-  background-color: blue;
+  background-color: rgb(18, 33, 168);
 }
 
 .dapp-box.unit {
@@ -411,7 +412,7 @@ span.topbar-space {
 
 .dapp-unitpool-data {
   border-radius: 10px;
-  font-size: 1.5em;
+  font-size: 1.45em;
   margin-bottom: 1em;
   padding: 0.2em;
   background-color: rgba(1, 26, 86, 1);
@@ -419,14 +420,17 @@ span.topbar-space {
 }
 
 .dapp-unitpool-button {
-    font-size: 1.3em;
+    font-size: 1.7em;
     background-color: grey;
     border-radius: 12px;
     padding-top: 0.2em;
     padding-bottom: 0.2em;
+    padding-right: 0.5em;
+    padding-left: 0.4em;
     cursor: pointer;
-    width: 50%;
+    width: fit-content;
     box-shadow: 1px 5px 10px rgba(0,0,0,0.5);
+    margin: 0 auto;
 }
 
 .dapp-unitpool-button.contribute {
@@ -434,13 +438,13 @@ span.topbar-space {
 }
 
 .dapp-unitpool-button.contribute:hover {
-    background-color: green;
+    background-color: seagreen;
 }
 
 .dapp-unitpool-button.execute {
-  background-color: orange;
+  background-color: darkorchid;
 }
 
 .dapp-unitpool-button.execute:hover {
-  background-color: coral;
+  background-color: orchid;
 }

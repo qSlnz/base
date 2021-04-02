@@ -7,6 +7,7 @@ let CreatePool = () => {
     const [threshold, setThreshold] = useState("0");
     const [deadline, setDeadline] = useState("0");
     const [showError, setShowError] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
 
     function handleChange(key: string, inputIndex: number) {
         inputIndex == 0 ? setThreshold(key) : setDeadline(key);
@@ -18,16 +19,21 @@ let CreatePool = () => {
 
         if (!(threshold) || !(deadline) || parseFloat(deadline) <= 0 || parseFloat(threshold) < 0) {
             setShowError(true);
+            setShowInfo(false);
             return;
         } else {
             setShowError(false);
         }
 
+        let res;
+
         try {
-            await contracts.StakerWriter.createPool(threshold, deadline);
+            res = await contracts.StakerWriter.createPool(threshold, deadline);
         } catch {
 
         }
+
+        //setShowInfo(true);
     }
 
     return (
@@ -55,12 +61,17 @@ let CreatePool = () => {
                             <input className="dapp-createtool-label-input" type="number" value={deadline} onChange={(e) => handleChange(e.currentTarget.value, 1)} />
                         </label>
                         <br></br>
-                        <input className="dapp-createpool-button" type="submit" value="Create pool" />
+                        <input className="dapp-createpool-button" type="submit" value="📖 Create pool" />
                     </form>
                 </div>
                 <div className="dapp-createtool-error">
                     {showError ? (
-                        "Please fill the form with threshold > 0 && minimum amount >= 0 my dear friend"
+                        "Please fill the form with threshold > 0 & minimum amount >= 0 my dear friend"
+                    ) : ""}
+                </div>
+                <div className="dapp-createtool-indo">
+                    {showInfo ? (
+                        "Pool created ! 🙂"
                     ) : ""}
                 </div>
             </div>

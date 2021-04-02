@@ -1,8 +1,8 @@
 import './App.css';
 import { SideBar, CreatePool, Counter } from './components';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { ethers, providers, Wallet } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 import { API as OnboardApi, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import { API as NotifyAPI } from 'bnc-notify/dist/types/notify';
 
@@ -182,10 +182,8 @@ function App() {
     }, [address, network]);
 
     useEffect(() => {
-        if (pools.length == 0) {
-            return;
-        }
-
+        console.log("test");
+        return;
         const timer = setInterval(() => {
             console.log("Decrease remaining Time");
             setPools(pools => pools.map(pool => {
@@ -199,7 +197,7 @@ function App() {
         return () => {
             clearInterval(timer);
         }
-    }, [pools]);
+    }, []);
 
     /* Check if the connected network is the network of the app */
     const checkNetwork = () => {
@@ -287,6 +285,7 @@ function App() {
                     <div className="appZone">
                         <CreatePool />
                         {pools.slice(0).reverse().map((pool) => {
+                            const l = Math.min(100 * pool.totalStaked / pool.threshold, 100);
                             return (
                                 <div className="dapp-container" key={pool.poolId}>
                                     <div className="dapp-box unit">
@@ -294,12 +293,19 @@ function App() {
                                             Pool #{pool.poolId}
                                         </div>
                                         <hr></hr>
-                                        <div className="dapp-unitpool-data">
-                                            Total staked in the pool: {pool.totalStaked} eth
+                                        <div className="dapp-unitpool-data" style={{ background: "linear-gradient(90deg, #3CB371 0%, #3CB371 " + `${l}%, ` + "rgba(2,9,53,1) " + `${l}%, ` + "rgba(2,9,53,1) 100%)" }}>
+                                            {pool.totalStaked} eth raised
                                         </div>
-                                        <div className="dapp-unitpool-data">
-                                            Value to reach: {pool.threshold} eth
-                                        </div>
+                                        {pool.totalStaked < pool.threshold &&
+                                            <div className="dapp-unitpool-data">
+                                                Value to reach: {pool.threshold} eth
+                                            </div>
+                                        }
+                                        {pool.totalStaked >= pool.threshold &&
+                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
+                                                🎉 Minimum amount reached ! 🥳
+                                            </div>
+                                        }
                                         <Counter data={pool.remainingTime} />
                                         {pool.remainingTime <= 0 && pool.threshold > pool.totalStaked &&
                                             <div className="dapp-unitpool-data" style={{ backgroundColor: "brown" }}>
@@ -307,8 +313,8 @@ function App() {
                                             </div>
                                         }
                                         {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && !pool.executed &&
-                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "orange" }}>
-                                                The pool is a success ! You can know send the collected amount
+                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "darkorchid" }}>
+                                                The pool is end and it is a great success !
                                             </div>
                                         }
                                         {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && !pool.executed &&
@@ -320,12 +326,12 @@ function App() {
                                                     }
                                                 }
                                             }>
-                                                Send pool fund
+                                                🚀 Send pool fund
                                             </div>
                                         }
                                         {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && pool.executed &&
                                             <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
-                                                The pool is a success and the colleted amount has been sent
+                                                The pool is a success and the collected amount has been sent
                                             </div>
                                         }
                                         {pool.remainingTime > 0 &&
@@ -343,7 +349,7 @@ function App() {
                                                     }
                                                 }
                                             }>
-                                                Contribute 1 ether
+                                                ❤️ Contribute 1 ether
                                             </div>
                                         }
                                     </div>
