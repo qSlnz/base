@@ -18,7 +18,7 @@ code {
   height: -webkit-fill-available;
   width: 5em;
 
-  border-right: 2px solid orchid;
+  border-right: 2px solid salmon;
   background: rgb(2, 0, 36);
   background: linear-gradient(
     148deg,
@@ -88,7 +88,7 @@ code {
 
   background-blend-mode: multiply;
 
-  border-bottom: 2px solid orchid;
+  border-bottom: 2px solid salmon;
 }
 
 .loginbar-login {
@@ -215,19 +215,11 @@ code {
  **************/
 
 .mainscreen {
-  background-color: royalblue;
+  background-color: azure;
   position: fixed;
   right: 0;
   width: calc(100vw - 5em - 2px);
   height: 100%;
-}
-
-.gamescreen {
-  background-color: whitesmoke;
-  position: fixed;
-  right: 0;
-  width: calc(100vw - 17em);
-  height: calc(100vh - 1.5em - 2.5em);
 }
 
 /**********
@@ -236,8 +228,8 @@ code {
 
 .topbar {
   background-color: white;
-  border-bottom: 2px solid orchid;
-  color: orchid;
+  border-bottom: 2px solid salmon;
+  color: salmon;
   text-transform: uppercase;
   font-weight: bold;
   font-family: monospace;
@@ -314,17 +306,112 @@ span.topbar-space {
  ************/
 
  .appZone {
-    width: inherit;
-    height: inherit;
+  width: 100%;
+  height: calc(100% - 7em);
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  /* display: grid;
+  grid-template-columns: repeat(20%, 5);
+  grid-template-rows: 50% 50% 50% 50%; */
+
+  overflow-y: scroll;
+  scrollbar-color: azure rgba(0, 35, 102, 1);
+  scrollbar-width: thin;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  font-family: Quicksand;
+}
+
+.appZone::-webkit-scrollbar {
+    background-color: azure;
+    width: 6px;
+    border-left: 1px solid rgba(0,0,0,0.2);
+}
+
+.appZone::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 35, 102, 1);
 }
 
 .appZone-text {
+    color: white;
+    font-size: 10em;
+    font-family: Quicksand;
+    position: absolute;
+    left: 15%;
+    top: 40%;
+}
+.dapp-container {
+  height: 28em;
+  width: 25%;
+}
+
+.dapp-box {
+  height: 24em;
+  background-color: royalblue;
+  margin: 1em;
+  padding: 1em;
+  border-radius: 10px;
+  box-shadow: 2px 4px 20px rgba(0,0,0,0.5);
+}
+
+.dapp-box.create {
+  background-color: rgba(1, 26, 86, 1);
   color: white;
-  font-size: 10em;
-  font-family: Quicksand;
-  margin-top: -1em;
+  border: 2px solid salmon;
+}
+
+.dapp-createpool-title {
+  font-size: 2em;
+}
+
+.dapp-createtool-label-text {
+  margin-bottom: 0.5em;
+}
+
+.dapp-createtool-label-input {
+  font-size: 1.3em;
+  width: 4em;
+  border-radius: 8px;
+  border: none;
+  padding: 5px;
+}
+
+.dapp-createtool-error {
+  color: red;
+  margin-top: 0.5em;
+}
+
+.dapp-createpool-button {
+  background-color: royalblue;
+  color: white;
+  font-family: 'Quicksand';
+  font-size: 1.6em;
+  border-radius: 8px;
+  border: none;
+  padding: 0.2em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  cursor: pointer;
+  margin-top: 1em;
+}
+
+.dapp-createpool-button:hover {
+  background-color: blue;
+}
+
+.dapp-box.unit {
+  color: white;
+}
+
+.dapp-unitpool-title {
+  font-size: 2em;
+}
+
+.dapp-unitpool-data {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+  border: 1px solid white;
+  padding: 0.2em;
 }

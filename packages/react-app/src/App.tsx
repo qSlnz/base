@@ -1,9 +1,11 @@
 import './App.css';
-import { SideBar, CreatePoolInput } from './components';
-import { useEffect, useState } from 'react';
+import { SideBar, CreatePool, Counter } from './components';
+import React, { useEffect, useState } from 'react';
 
 import { ethers, Wallet } from 'ethers';
-import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
+import { API as OnboardApi, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
+import { API as NotifyAPI } from 'bnc-notify/dist/types/notify';
+
 
 import { initNotify, initOnboard } from './utils/initOnboard';
 import { NETWORKS } from './utils/networks';
@@ -15,9 +17,17 @@ import Blockies from "react-blockies";
 import { contracts } from './contracts';
 import { connectAllContracts } from './contracts/Contracts';
 
+
 /*****************
  * SHOULD BE SET *
  *****************/
+
+interface Pool {
+    threshold: number,
+    deadline: number,
+    totalStaked: number,
+    executed: boolean
+};
 
 // Le network sur lequel tourne l'application
 const appNetwork = NETWORKS.localhost;
@@ -31,6 +41,10 @@ const localProvider: ethers.providers.JsonRpcProvider = new ethers.providers.Jso
 let localSigner: ethers.providers.JsonRpcSigner;
 
 function App() {
+    // Data ethereum
+    const [pools, setPools] = useState<Array<Pool>>([]);
+    const [remainingTime, setRemainingTime] = useState<Array<number>>([]);
+
     const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
     const [address, setAddress] = useState<string>("");
     const [network, setNetwork] = useState<number>(0);
@@ -38,21 +52,24 @@ function App() {
     const [balance, setBalance] = useState<string>("");
     const [wallet, setWallet] = useState<Wallet>(ethers.Wallet.createRandom());
 
-    const [onboard, setOnboard] = useState<API>();
-    const [notify, setNotify] = useState<any | null>(null);
+    const [onboard, setOnboard] = useState<OnboardApi>();
+    //const [notify, setNotify] = useState<NotifyAPI>(initNotify(appNetwork));
 
     const ens = useLookupAddress(address);
 
     useEffect(() => {
         let subscriptions: Subscriptions = {
-            address: setAddress,
+            address: async (address: any) => {
+                setAddress(address);
+            },
             network: async (network: any) => {
-                console.log("POPOPO " + network);
                 setNetwork(network);
 
                 network === appNetwork.chainId ? setIsNetworkCorrect(true) : setIsNetworkCorrect(false);
             },
-            balance: setBalance,
+            balance: async (balance: any) => {
+                setBalance(balance);
+            },
             wallet: async (wallet: any) => {
                 if (wallet.provider) {
                     setWallet(wallet);
@@ -62,32 +79,6 @@ function App() {
                     ).getSigner();
 
                     connectAllContracts(localSigner);
-
-                    contracts.Staker.createPool(5, 8);
-
-                    // contractListKey.forEach((key) => {
-                    //     let temp = typeof contractList[key];
-                    //     contractList[key] = contractList[key].connect(localSigner.getSigner());
-                    // })
-
-
-
-                    // for (let key in contractList) {
-                    //     contractList[key as keyof IContractList] = contractList[key as keyof IContractList].connect(localSigner.getSigner()) as Staker;
-                    // }
-
-
-
-                    // let staker: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI)) as Staker;
-                    // staker = staker.connect(localProvider.getSigner());
-
-                    // await staker.createPool(2, 2);
-
-                    // let staker2: Staker = (new ethers.Contract(Staker_ADDRESS, Staker_ABI)) as Staker;
-                    // staker2.connect(localProvider.getSigner());
-
-                    // await staker2.createPool(2, 2);
-
 
                     window.localStorage.setItem('selectedWallet', wallet.name);
                 } else {
@@ -100,7 +91,6 @@ function App() {
         const onboard = initOnboard(subscriptions, appNetwork);
 
         setOnboard(onboard);
-        setNotify(initNotify(appNetwork));
     }, []);
 
     useEffect(() => {
@@ -121,16 +111,69 @@ function App() {
         }
     }, [onboard]);
 
+    useEffect(() => {
+        const getPools = async () => {
+            let poolCount = await contracts.Staker.poolCount();
+            let poolList: Array<Pool> = [];
+            let remainingTime: Array<number> = [];
+
+            for (let poolId = 0; poolCount.gt(poolId); poolId++) {
+                let res = await contracts.Staker.pools(poolId);
+
+                let newPool: Pool = {
+                    threshold: parseFloat(ethers.utils.formatEther(res.threshold)),
+                    totalStaked: parseFloat(res.totalStaked.toString()),
+                    deadline: parseInt(res.deadline.toString()),
+                    executed: res.executed
+                }
+
+                remainingTime.push(parseInt(res.deadline.toString()) - Math.round((Date.now() / 1000)));
+                poolList.push(newPool);
+            }
+
+            setRemainingTime(remainingTime);
+            setPools(poolList);
+        };
+
+        if (address && checkNetwork() && pools.length == 0) {
+            console.log("On populate la population");
+
+            getPools();
+        } else {
+            console.log("On populate PAS la population");
+        }
+    }, [address, network]);
+
+    useEffect(() => {
+        console.log("JPP");
+
+        if (pools.length == 0) {
+            return;
+        }
+
+        console.log("nique ta pute de mère");
+
+        const timer = setInterval(() => {
+            // let newTime: Array<number> = [...remainingTime];
+
+            // for (let i = 0; i < newTime.length; i++) {
+            //     newTime[i] = newTime[i] + 1;
+            // }
+
+            setRemainingTime(remainingTime => remainingTime.map(el => el + 1));
+        }, 1000);
+
+        return () => {
+            clearInterval(timer);
+        }
+    }, [pools]);
+
     /* Check if the connected network is the network of the app */
     const checkNetwork = () => {
-        console.log("CheckNetwork>");
-
         if (onboard) {
-            console.log("\t\t> " + network + ", " + appNetwork.chainId);
             return network === appNetwork.chainId;
         }
 
-        console.log("\t\t> Bad");
         return false;
     }
 
@@ -138,10 +181,17 @@ function App() {
         <div className="App">
             <SideBar />
             <div className="mainscreen">
-                {(onboard && notify) && !activeLoadingScreen ? "" : <div className="loadingscreen"><div className="loadingscreen-text">Loading</div></div>}
+                {
+                    (onboard) && !activeLoadingScreen ?
+                        ""
+                        :
+                        <div className="loadingscreen">
+                            <div className="loadingscreen-text">Loading</div>
+                        </div>
+                }
                 <TopBar />
                 <div className="loginbar">
-                    {onboard && notify ? (
+                    {onboard ? (
                         <div className="loginbar-login">
                             {!wallet.provider && (
                                 <div className="loginbar-button connexion"
@@ -200,17 +250,40 @@ function App() {
                         </div>
                     ) : ""}
                 </div>
-                <div className="appZone">
-                    {wallet.provider && network && isNetworkCorrect ? (
-                        <div className="appZone-createPool">
-                            <CreatePoolInput />
-                        </div>
-                    ) : (
+                {wallet.provider && network && isNetworkCorrect && remainingTime ? (
+                    <div className="appZone">
+                        <CreatePool />
+                        {pools.map((value, index) => {
+                            return (
+                                <div className="dapp-container" key={index}>
+                                    <div className="dapp-box unit">
+                                        <div className="dapp-unitpool-title">
+                                            Pool #{index}
+                                        </div>
+                                        <hr></hr>
+                                        <div className="dapp-unitpool-data">
+                                            Total staked in the pool: {value.totalStaked}
+                                        </div>
+                                        <div className="dapp-unitpool-data">
+                                            Value to reach: {value.threshold}
+                                        </div>
+                                        <Counter data={remainingTime} index={index} />
+                                        <div className="dapp-unitpool-data">
+                                            {value.executed}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                ) : (
+                    <div className="appZone" style={{ backgroundColor: 'royalblue' }}>
+
                         <div className="appZone-text">
                             Pooling made easy.
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div >
     );
