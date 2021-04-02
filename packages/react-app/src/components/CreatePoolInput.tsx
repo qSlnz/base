@@ -1,11 +1,12 @@
-import { Component, SyntheticEvent, useState } from "react";
-import { ethers } from 'ethers';
+import { SyntheticEvent, useState } from "react";
 import contracts from "../contracts/Contracts";
+import { API as NotifyAPI } from 'bnc-notify/dist/types/notify';
 
 
-let CreatePoolInput = () => {
-    const [threshold, setThreshold] = useState("");
-    const [minimumAmount, setMinimumAmount] = useState("");
+let CreatePool = () => {
+    const [threshold, setThreshold] = useState("0");
+    const [minimumAmount, setMinimumAmount] = useState("0");
+    const [showError, setShowError] = useState(false);
 
     function handleChange(key: string, inputIndex: number) {
         console.log(key);
@@ -15,24 +16,53 @@ let CreatePoolInput = () => {
     let handleSubmit = async (event: SyntheticEvent) => {
         // Création de la pool
         event.preventDefault();
-        console.log("On envoie");
-        let res = await contracts.Staker.createPool(threshold, minimumAmount);
+
+        if (!(threshold) || !(minimumAmount)) {
+            setShowError(true);
+            return;
+        } else {
+            setShowError(false);
+        }
+
+        let res = await contracts.Staker.createPool(threshold, Number(minimumAmount));
         console.log(res);
     }
 
     return (
-        <form onSubmit={handleSubmit} >
-            <label>
-                Threshold: time in seconds before the pool is close
-                    <input type="number" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
-            </label>
-            <label>
-                Minimum amount to raise before the pool is a success. If this amount is not reached before threshold time is reach, the pool is canceled.
-                    <input type="number" value={minimumAmount} onChange={(e) => handleChange(e.currentTarget.value, 1)} />
-            </label>
-            < input type="submit" value="Envoyer" />
-        </form>
+        <div className="dapp-container create">
+            <div className="dapp-box create">
+                <div className="dapp-createpool-title">
+                    Create a new pool
+                </div>
+                <hr></hr>
+                <div className="dapp-createtool-input">
+                    <form onSubmit={handleSubmit} >
+                        <label>
+                            <div className="dapp-createtool-label-text">
+                                Threshold: time in seconds before the pool is close
+                            </div>
+                            <input className="dapp-createtool-label-input" type="number" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
+                        </label>
+                        <br></br>
+                        <br></br>
+                        <label>
+                            <div className="dapp-createtool-label-text">
+                                Minimum amount to raise in ethers. If this amount is not reached before threshold end, the pool is canceled.
+                            </div>
+                            <input className="dapp-createtool-label-input" type="number" value={minimumAmount} onChange={(e) => handleChange(e.currentTarget.value, 1)} />
+                        </label>
+                        <br></br>
+                        <input className="dapp-createpool-button" type="submit" value="Create pool" />
+                    </form>
+                </div>
+                <div className="dapp-createtool-error">
+                    {showError ? (
+                        "Please fill the form my dear friend"
+                    ) : ""}
+                </div>
+            </div>
+        </div >
     );
 }
 
-export default CreatePoolInput;
+export default CreatePool;
