@@ -62,14 +62,12 @@ const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) =
 
 // publish address & abi in one ts file and export it to react frontend
 const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, contractName: string): Promise<boolean> => {
-    console.log(
+    hre.deployments.log(
         "\t 🚢",
         chalk.yellow("PUBLISH"),
         "(abi, address)",
         chalk.cyan(contractName)
     );
-
-    console.log(contractName);
 
     let contractInformation: Deployment = await hre.deployments.get(contractName);
 
@@ -81,12 +79,12 @@ const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, cont
 };
 
 const func: DeployFunction = async function (hre) {
-    console.log(
+    hre.deployments.log(
         chalk.bgYellow.black("\n\n 🌊 PUBLISHING TO FRONTENDS ")
     );
 
     for (let key in frontEndPathConfig) {
-        console.log(
+        hre.deployments.log(
             "\t 🚗 " + key.toUpperCase() + " PATH:",
             chalk.blue(frontEndPathConfig[key])
         );
@@ -101,7 +99,6 @@ const func: DeployFunction = async function (hre) {
         contractsList.push(contractName);
     }
 
-    console.log(contractsList);
     let indexFile = "";
 
     // copy abi/address of deployed contracts
@@ -117,7 +114,7 @@ const func: DeployFunction = async function (hre) {
     buildContractsUniqueAccessPointFile(contractsList);
     writeFileSync(`${frontEndPathConfig["react"]}/index.ts`, indexFile);
 
-    console.log(
+    hre.deployments.log(
         "\t 🚢",
         chalk.yellow("PUBLISHING"),
         "typechained contracts"

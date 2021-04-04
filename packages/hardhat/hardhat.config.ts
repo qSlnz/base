@@ -174,7 +174,7 @@ const frontEndPathConfig: { [key: string]: string } = {
 export { frontEndPathConfig };
 export default config;
 
-module.exports(config);
+// module.exports = config;
 
 /*********
  * TASKS *

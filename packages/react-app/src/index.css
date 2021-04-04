@@ -408,6 +408,20 @@ span.topbar-space {
 
 .dapp-unitpool-title {
   font-size: 2em;
+  margin-left: 1.5em;
+}
+
+.dapp-unitpool-balance {
+    background-color: rgb(255, 208, 0);
+    float: right;
+    height: 2e;
+    border-radius: 12px;
+    font-size: 1.5em;
+    width: 2em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    position: relative;
+    margin-top: -0.3em;
 }
 
 .dapp-unitpool-data {

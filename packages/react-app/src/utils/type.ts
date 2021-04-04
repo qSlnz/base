@@ -4,7 +4,8 @@ interface Pool {
     deadline: number,
     totalStaked: number,
     executed: boolean,
-    remainingTime: number
+    remainingTime: number,
+    userBalance: number
 };
 
 export default Pool;
