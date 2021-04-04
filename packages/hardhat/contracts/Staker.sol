@@ -31,10 +31,14 @@ contract Staker {
      * EVENTS *
      **********/
 
-    event Stake(uint256 poolId, address staker, uint256 amount);
-    event PoolCreation(uint256 poolId, address staker);
-    event PoolExecuted(uint256 poolId);
-    event PoolWithdraw(uint256 poolId, address staker);
+    event Stake(
+        uint256 indexed poolId,
+        address indexed staker,
+        uint256 indexed amount
+    );
+    event PoolCreation(uint256 indexed poolId, address indexed staker);
+    event PoolExecuted(uint256 indexed poolId);
+    event PoolWithdraw(uint256 indexed poolId, address indexed staker);
 
     /*************
      * MODIFIERS *

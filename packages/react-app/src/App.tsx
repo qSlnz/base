@@ -152,28 +152,8 @@ function App() {
                 let newPoolBox = <PoolBox poolId={cleanPoolId} address={address} key={cleanPoolId} />;
 
                 setPoolBoxList(prev => prev.concat(newPoolBox));
-                // let id = parseInt(poolId.toString());
-                // let newPool = await addNewPool(id);
-
-                // setPools(prevPools => {
-                //     /* handle case double add */
-                //     if (!prevPools[id]) {
-                //         return prevPools.concat(newPool)
-                //     } else {
-                //         return prevPools;
-                //     }
-                // });
             });
         };
-
-        //     let newPools: Array<Pool> = [];
-
-        //     for (let poolId = 0; poolCount.gt(poolId); poolId++) {
-        //         newPools.push(await addNewPool(poolId));
-        //     }
-
-        //     setPools(prevPools => prevPools.concat(newPools));
-
 
 
         //     let stakeEventFilter = contracts.StakerReader.filters.Stake(null, null, null);
