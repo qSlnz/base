@@ -32,8 +32,9 @@ contract Staker {
      **********/
 
     event Stake(uint256 poolId, address staker, uint256 amount);
-    event PoolCreation(address staker, uint256 poolId);
+    event PoolCreation(uint256 poolId, address staker);
     event PoolExecuted(uint256 poolId);
+    event PoolWithdraw(uint256 poolId, address staker);
 
     /*************
      * MODIFIERS *
@@ -98,7 +99,7 @@ contract Staker {
 
         pools[poolId] = newPool;
 
-        emit PoolCreation(msg.sender, poolId);
+        emit PoolCreation(poolId, msg.sender);
 
         return poolId;
     }
@@ -137,6 +138,8 @@ contract Staker {
         require(success, "Sending money failed");
 
         balances[msg.sender][_poolId] = 0;
+
+        emit PoolWithdraw(_poolId, msg.sender);
     }
 
     function execute(uint256 _poolId)
