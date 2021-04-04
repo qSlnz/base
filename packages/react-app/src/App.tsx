@@ -1,5 +1,5 @@
 import './App.css';
-import { SideBar, CreatePool, Counter } from './components';
+import { SideBar, CreatePool, Counter, PoolBox } from './components';
 import { useEffect, useState } from 'react';
 
 import { ethers, Wallet } from 'ethers';
@@ -53,6 +53,8 @@ connectAllContractsReader(localProvider);
 function App() {
     // application datas
     const [pools, setPools] = useState<Array<Pool>>([]);
+    const [poolCount, setPoolCount] = useState<number>(0);
+    const [poolBoxList, setPoolBoxList] = useState<JSX.Element[]>([]);
 
     // network datas
     const [address, setAddress] = useState<string>("");
@@ -130,94 +132,111 @@ function App() {
             let blocknumber = await localProvider.getBlockNumber()
             localProvider.resetEventsBlock(blocknumber + 1);
 
-            let poolCount = await contracts.StakerReader.poolCount();
-            let newPools: Array<Pool> = [];
+            let poolCount = (await contracts.StakerReader.poolCount()).toString();
+            let tempPoolBoxList: JSX.Element[] = [];
 
-            for (let poolId = 0; poolCount.gt(poolId); poolId++) {
-                newPools.push(await addNewPool(poolId));
+            for (let i = 0; i < parseInt(poolCount); i++) {
+                tempPoolBoxList.push(<PoolBox poolId={i} address={address} key={i} />);
+                console.log("App> pushing new poolBox: " + i);
             }
 
-            setPools(prevPools => prevPools.concat(newPools));
+            setPoolBoxList(prev => tempPoolBoxList);
 
             let creationPoolEventFilter = contracts.StakerReader.filters.PoolCreation(null, null);
 
             contracts.StakerReader.on(creationPoolEventFilter, async (poolId, address, event) => {
                 console.log("Event: creationPoolEventFilter: " + address + ", " + poolId + ", " + event);
 
-                let id = parseInt(poolId.toString());
-                let newPool = await addNewPool(id);
+                const cleanPoolId = parseInt(poolId.toString());
 
-                setPools(prevPools => {
-                    /* handle case double add */
-                    if (!prevPools[id]) {
-                        return prevPools.concat(newPool)
-                    } else {
-                        return prevPools;
-                    }
-                });
-            });
+                let newPoolBox = <PoolBox poolId={cleanPoolId} address={address} key={cleanPoolId} />;
 
-            let stakeEventFilter = contracts.StakerReader.filters.Stake(null, null, null);
+                setPoolBoxList(prev => prev.concat(newPoolBox));
+                // let id = parseInt(poolId.toString());
+                // let newPool = await addNewPool(id);
 
-            contracts.StakerReader.on(stakeEventFilter, async (poolId, staker, amount, event) => {
-                console.log("Event: stakeEventFilter: " + poolId + ", " + staker + ", " + amount + " , block: " + event.blockNumber);
-                localProvider.resetEventsBlock(event.blockNumber + 1);
-
-                const i = parseInt(poolId.toString());
-                console.log("StakeAmount: " + parseFloat(ethers.utils.formatEther(amount)));
-
-                if (staker.toLocaleLowerCase() === address.toLowerCase()) {
-                    console.log("Update user balance :)");
-                    setPools(prevPools => {
-                        const newPoolsList = [...prevPools];
-                        let newPool = newPoolsList[i];
-                        newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
-                        newPool.userBalance += parseFloat(ethers.utils.formatEther(amount));
-                        newPoolsList[i] = newPool;
-                        return newPoolsList;
-                    });
-                } else {
-                    console.log("Dont update user balance :(");
-                    setPools(prevPools => {
-                        const newPoolsList = [...prevPools];
-                        let newPool = newPoolsList[i];
-                        newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
-                        newPoolsList[i] = newPool;
-                        return newPoolsList;
-                    });
-                }
-            });
-
-            let executeEventFilter = contracts.StakerReader.filters.PoolExecuted(null);
-
-            contracts.StakerReader.on(executeEventFilter, async (poolId) => {
-                console.log("Event: executeEventFilter: " + poolId);
-                const i = parseInt(poolId.toString());
-
-                setPools(prevPools => {
-                    const newPoolsList = [...prevPools];
-                    let newPool = newPoolsList[i];
-                    newPool.executed = true;
-                    newPoolsList[i] = newPool;
-                    return newPoolsList;
-                });
-            });
-
-            let withdrawEventFilter = contracts.StakerReader.filters.PoolWithdraw(null, null);
-
-            contracts.StakerReader.on(withdrawEventFilter, async (poolId) => {
-                console.log("Event: withdrawEventFilter: " + poolId);
-                const i = parseInt(poolId.toString());
-
-                setPools(prevPools => {
-                    const newPoolsList = [...prevPools];
-                    let newPool = newPoolsList[i];
-                    newPool.userBalance = 0;
-                    newPoolsList[i] = newPool;
-                    return newPoolsList;
-                });
+                // setPools(prevPools => {
+                //     /* handle case double add */
+                //     if (!prevPools[id]) {
+                //         return prevPools.concat(newPool)
+                //     } else {
+                //         return prevPools;
+                //     }
+                // });
             });
         };
+
+        //     let newPools: Array<Pool> = [];
+
+        //     for (let poolId = 0; poolCount.gt(poolId); poolId++) {
+        //         newPools.push(await addNewPool(poolId));
+        //     }
+
+        //     setPools(prevPools => prevPools.concat(newPools));
+
+
+
+        //     let stakeEventFilter = contracts.StakerReader.filters.Stake(null, null, null);
+
+        //     contracts.StakerReader.on(stakeEventFilter, async (poolId, staker, amount, event) => {
+        //         console.log("Event: stakeEventFilter: " + poolId + ", " + staker + ", " + amount + " , block: " + event.blockNumber);
+        //         localProvider.resetEventsBlock(event.blockNumber + 1);
+
+        //         const i = parseInt(poolId.toString());
+        //         console.log("StakeAmount: " + parseFloat(ethers.utils.formatEther(amount)));
+
+        //         if (staker.toLocaleLowerCase() === address.toLowerCase()) {
+        //             console.log("Update user balance :)");
+        //             setPools(prevPools => {
+        //                 const newPoolsList = [...prevPools];
+        //                 let newPool = newPoolsList[i];
+        //                 newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
+        //                 newPool.userBalance += parseFloat(ethers.utils.formatEther(amount));
+        //                 newPoolsList[i] = newPool;
+        //                 return newPoolsList;
+        //             });
+        //         } else {
+        //             console.log("Dont update user balance :(");
+        //             setPools(prevPools => {
+        //                 const newPoolsList = [...prevPools];
+        //                 let newPool = newPoolsList[i];
+        //                 newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
+        //                 newPoolsList[i] = newPool;
+        //                 return newPoolsList;
+        //             });
+        //         }
+        //     });
+
+        //     let executeEventFilter = contracts.StakerReader.filters.PoolExecuted(null);
+
+        //     contracts.StakerReader.on(executeEventFilter, async (poolId) => {
+        //         console.log("Event: executeEventFilter: " + poolId);
+        //         const i = parseInt(poolId.toString());
+
+        //         setPools(prevPools => {
+        //             const newPoolsList = [...prevPools];
+        //             let newPool = newPoolsList[i];
+        //             newPool.executed = true;
+        //             newPoolsList[i] = newPool;
+        //             return newPoolsList;
+        //         });
+        //     });
+
+        //     let withdrawEventFilter = contracts.StakerReader.filters.PoolWithdraw(null, null);
+
+        //     contracts.StakerReader.on(withdrawEventFilter, async (poolId) => {
+        //         console.log("Event: withdrawEventFilter: " + poolId);
+        //         const i = parseInt(poolId.toString());
+
+        //         setPools(prevPools => {
+        //             const newPoolsList = [...prevPools];
+        //             let newPool = newPoolsList[i];
+        //             newPool.userBalance = 0;
+        //             newPoolsList[i] = newPool;
+        //             return newPoolsList;
+        //         });
+        //     });
+        // };
 
         if (address && checkNetwork() && pools.length == 0) {
             console.log("Retrieve all pools created");
@@ -312,100 +331,7 @@ function App() {
                 {wallet.provider && network && isNetworkCorrect ? (
                     <div className="appZone">
                         <CreatePool />
-                        {pools.slice(0).reverse().map((pool) => {
-                            const l = Math.min(100 * pool.totalStaked / pool.threshold, 100);
-                            return (
-                                <div className="dapp-container" key={pool.poolId}>
-                                    <div className="dapp-box unit">
-                                        <span className="dapp-unitpool-title">
-                                            Pool #{pool.poolId}
-                                        </span>
-                                        {pool.totalStaked > 0 &&
-                                            <span className="dapp-unitpool-balance">
-                                                {pool.userBalance}
-                                            </span>
-                                        }
-                                        {pool.totalStaked <= 0 &&
-                                            <span className="dapp-unitpool-balance" style={{ backgroundColor: 'rgba(128, 128, 128, 0.5)', color: "rgba(255, 255, 255, 0.5)" }}>
-                                                {pool.userBalance}
-                                            </span>
-                                        }
-                                        <hr></hr>
-                                        <div className="dapp-unitpool-data" style={{ background: "linear-gradient(90deg, #3CB371 0%, #3CB371 " + `${l}%, ` + "rgba(2,9,53,1) " + `${l}%, ` + "rgba(2,9,53,1) 100%)" }}>
-                                            {pool.totalStaked} eth raised
-                                        </div>
-                                        {pool.totalStaked < pool.threshold &&
-                                            <div className="dapp-unitpool-data">
-                                                Value to reach: {pool.threshold} eth
-                                            </div>
-                                        }
-                                        {pool.totalStaked >= pool.threshold &&
-                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
-                                                🎉 Minimum amount reached ! 🥳
-                                            </div>
-                                        }
-                                        <Counter remTime={pool.remainingTime} poolId={pool.poolId} />
-                                        {pool.remainingTime <= 0 && pool.threshold > pool.totalStaked &&
-                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "brown" }}>
-                                                Pool close without reaching the minimal required amount
-                                            </div>
-                                        }
-                                        {pool.remainingTime <= 0 && pool.threshold > pool.totalStaked && pool.userBalance > 0 &&
-                                            <div className="dapp-unitpool-button withdraw" onClick={
-                                                async () => {
-                                                    try {
-                                                        await contracts.StakerWriter.withdraw(pool.poolId);
-                                                    } catch {
-                                                    }
-                                                }
-                                            }>
-                                                💰 Withdraw your fund
-                                            </div>
-                                        }
-                                        {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && !pool.executed &&
-                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "darkorchid" }}>
-                                                The pool is end and it is a great success !
-                                            </div>
-                                        }
-                                        {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && !pool.executed &&
-                                            <div className="dapp-unitpool-button execute" onClick={
-                                                async () => {
-                                                    try {
-                                                        await contracts.StakerWriter.execute(pool.poolId);
-                                                    } catch {
-                                                    }
-                                                }
-                                            }>
-                                                🚀 Send pool fund
-                                            </div>
-                                        }
-                                        {pool.remainingTime <= 0 && pool.threshold <= pool.totalStaked && pool.executed &&
-                                            <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
-                                                The pool is a success and the collected amount has been sent
-                                            </div>
-                                        }
-                                        {pool.remainingTime > 0 &&
-                                            <div className="dapp-unitpool-data">
-                                                The pool is open, you can contribute if you feels generous :)
-                                            </div>
-                                        }
-                                        {pool.remainingTime > 0 &&
-                                            <div className="dapp-unitpool-button contribute" onClick={
-                                                async () => {
-                                                    try {
-                                                        await contracts.StakerWriter.stake(pool.poolId, { value: ethers.utils.parseEther("1") });
-                                                    } catch (e) {
-                                                        console.log(e);
-                                                    }
-                                                }
-                                            }>
-                                                ❤️ Contribute 1 ether
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            )
-                        })}
+                        {poolBoxList.slice(0).reverse()}
                     </div>
                 ) : (
                     <div className="appZone" style={{ backgroundColor: 'royalblue' }}>

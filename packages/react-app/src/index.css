@@ -99,6 +99,7 @@ code {
 
 .loginbar-button {
   order: 1;
+  user-select: none;
 
   height: 1.31em;
   width: 10em;
@@ -345,6 +346,7 @@ span.topbar-space {
 .dapp-container {
   height: 28em;
   width: 25%;
+  user-select: none;
 }
 
 .dapp-box {
