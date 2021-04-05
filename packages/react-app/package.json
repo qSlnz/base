@@ -10,17 +10,15 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
     "bnc-notify": "^1.5.1",
     "bnc-onboard": "^1.20.0",
     "dotenv": "^8.2.0",
     "ethers": "^5.0.32",
+    "ipfs-http-client": "^49.0.4",
     "react": "^17.0.2",
     "react-blockies": "^1.4.1",
     "react-dom": "^17.0.2",
+    "react-qr-reader": "^2.2.1",
     "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
@@ -29,7 +27,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "ipfs": "node ./scripts/ipfs.js",
+    "surge": "surge ./build",
+    "s3": "node ./scripts/s3.js",
+    "ship": "yarn surge"
   },
   "eslintConfig": {
     "extends": [
@@ -50,6 +52,12 @@
     ]
   },
   "devDependencies": {
-    "@types/react-blockies": "^1.4.0"
+    "@types/react-blockies": "^1.4.0",
+    "surge": "0.21.7",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-qr-reader": "^2.1.3"
   }
 }
