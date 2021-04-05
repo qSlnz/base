@@ -10,6 +10,7 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     const [remainingTime, setRemainingTime] = useState(-1);
     const [userBalance, setUserBalance] = useState(0);
     const [isPoolEnded, setIsPoolEnded] = useState(false);
+    const [isDataLoaded, setDataLoaded] = useState(false);
 
     useEffect(() => {
         const addNewPool = async () => {
@@ -29,6 +30,8 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
             } else {
                 setIsPoolEnded(true);
             }
+
+            setDataLoaded(true);
         };
 
         console.log("PoolBox> get pool information: " + poolId);
@@ -92,28 +95,35 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                     </span>
                 }
                 <hr></hr>
-                <div className="dapp-unitpool-data" style={{ background: `linear-gradient(90deg, #3CB371 0%, #3CB371 ${l}%, rgba(2,9,53,1) ${l}%, rgba(2,9,53,1) 100%)` }}>
-                    {totalStaked} eth raised
-                                        </div>
-                {totalStaked < threshold &&
+                {!isDataLoaded &&
+                    <div className="dapp-unitpool-loading">
+                        Loading...
+                    </div>
+                }
+                {isDataLoaded &&
+                    <div className="dapp-unitpool-data" style={{ background: `linear-gradient(90deg, #3CB371 0%, #3CB371 ${l}%, rgba(2,9,53,1) ${l}%, rgba(2,9,53,1) 100%)` }}>
+                        {totalStaked} eth raised
+                    </div>
+                }
+                {isDataLoaded && totalStaked < threshold &&
                     <div className="dapp-unitpool-data">
                         Value to reach: {threshold} eth
-                                            </div>
+                                                </div>
                 }
-                {totalStaked >= threshold &&
+                {isDataLoaded && isDataLoaded && totalStaked >= threshold &&
                     <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
                         🎉 Minimum amount reached ! 🥳
-                                            </div>
+                                                </div>
                 }
-                {remainingTime > -1 &&
+                {isDataLoaded && remainingTime > -1 &&
                     <Counter remTime={remainingTime} poolId={poolId} timeout={poolTimeout} />
                 }
-                {isPoolEnded && threshold > totalStaked &&
+                {isDataLoaded && isPoolEnded && threshold > totalStaked &&
                     <div className="dapp-unitpool-data" style={{ backgroundColor: "brown" }}>
                         Pool close without reaching the minimal required amount
-                                            </div>
+                                                </div>
                 }
-                {isPoolEnded && threshold > totalStaked && userBalance > 0 &&
+                {isDataLoaded && isPoolEnded && threshold > totalStaked && userBalance > 0 &&
                     <div className="dapp-unitpool-button withdraw" onClick={
                         async () => {
                             try {
@@ -124,14 +134,14 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                         }
                     }>
                         💰 Withdraw your fund
-                                            </div>
+                                                </div>
                 }
-                {isPoolEnded && threshold <= totalStaked && !executed &&
+                {isDataLoaded && isPoolEnded && threshold <= totalStaked && !executed &&
                     <div className="dapp-unitpool-data" style={{ backgroundColor: "darkorchid" }}>
                         The pool is end and it is a great success !
-                                            </div>
+                                                </div>
                 }
-                {isPoolEnded && threshold <= totalStaked && !executed &&
+                {isDataLoaded && isPoolEnded && threshold <= totalStaked && !executed &&
                     <div className="dapp-unitpool-button execute" onClick={
                         async () => {
                             try {
@@ -142,30 +152,30 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                         }
                     }>
                         🚀 Send pool fund
-                                            </div>
+                                                </div>
                 }
-                {isPoolEnded && threshold <= totalStaked && executed &&
+                {isDataLoaded && isPoolEnded && threshold <= totalStaked && executed &&
                     <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
                         The pool is a success and the collected amount has been sent
-                                            </div>
+                                                </div>
                 }
-                {!isPoolEnded &&
+                {isDataLoaded && !isPoolEnded &&
                     <div className="dapp-unitpool-data">
                         The pool is open, you can contribute if you feels generous :)
-                                            </div>
+                                                </div>
                 }
-                {!isPoolEnded &&
+                {isDataLoaded && !isPoolEnded &&
                     <div className="dapp-unitpool-button contribute" onClick={
                         async () => {
                             try {
-                                await contracts.StakerWriter.stake(poolId, { value: ethers.utils.parseEther("1") });
+                                await contracts.StakerWriter.stake(poolId, { value: ethers.utils.parseEther("0.1") });
                             } catch (e) {
                                 console.log(e);
                             }
                         }
                     }>
-                        ❤️ Contribute 1 ether
-                                            </div>
+                        ❤️ Contribute 0.1 ether
+                        </div>
                 }
             </div>
         </div>
