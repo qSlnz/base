@@ -78,6 +78,22 @@ const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, cont
     return true;
 };
 
+function buildNetworkInformationFile(hre: HardhatRuntimeEnvironment) {
+    hre.deployments.log(
+        "\t 🚢",
+        chalk.yellow("PUBLISH"),
+        "network information"
+    );
+
+    let networkInformationFile = "";
+
+    networkInformationFile += `let deployedNetwork = {\n\tchainId: ${hre.network.config.chainId},\n\tname: "${hre.network.name}"\n}`;
+    networkInformationFile += "\n\nexport default deployedNetwork;"
+
+    writeFileSync(`${frontEndPathConfig["react"]}/network.data.ts`, networkInformationFile);
+}
+
+
 const func: DeployFunction = async function (hre) {
     hre.deployments.log(
         chalk.bgYellow.black("\n\n 🌊 PUBLISHING TO FRONTENDS ")
@@ -111,12 +127,18 @@ const func: DeployFunction = async function (hre) {
 
     indexFile += "export { default as contracts } from './Contracts';\n";
 
+    // build contracts object that unify all deployed contracts
     buildContractsUniqueAccessPointFile(contractsList);
+
+    // build information about network
+    buildNetworkInformationFile(hre);
+    indexFile += 'export { default as deployedNetwork } from "./network.data";\n';
+
     writeFileSync(`${frontEndPathConfig["react"]}/index.ts`, indexFile);
 
     hre.deployments.log(
         "\t 🚢",
-        chalk.yellow("PUBLISHING"),
+        chalk.yellow("PUBLISH"),
         "typechained contracts"
     );
 
