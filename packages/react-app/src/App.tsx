@@ -14,7 +14,7 @@ import useLookupAddress from './hooks/LookupAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 import Blockies from "react-blockies";
-import { contracts } from './contracts';
+import { contracts, deployedNetwork } from './contracts';
 import { connectAllContractsReader, connectAllContractsWriter } from './contracts/Contracts';
 import GetPreviousWallet from './hooks/GetPreviousWallet';
 import Pool from './utils/type';
@@ -25,8 +25,12 @@ import Pool from './utils/type';
 
 // Network (i.e blockchain) where the application contracts are running
 // Set manually to avoid mistake
-// TODO: check the correspondance with the current hardhat network
-const appNetwork = NETWORKS.localhost;
+const appNetwork = NETWORKS.mumbai;
+
+// security check the correspondance with the last hardhat deployed network
+if (appNetwork.chainId != deployedNetwork.chainId || appNetwork.name != deployedNetwork.name) {
+    throw "Inconsistent networks information. Deployed contracts network and app contracts are differents.";
+}
 
 // We got 3 objects connected to the blockchain
 // - mainnetProvider that is connected to the mainnet, so we can retrieve information that are only available on L1 like ENS protocole
@@ -78,6 +82,7 @@ function App() {
             },
             network: async (network: any) => {
                 setNetwork(network);
+                console.log("New Network! > " + network);
 
                 network === appNetwork.chainId ? setIsNetworkCorrect(true) : setIsNetworkCorrect(false);
             },
@@ -135,9 +140,10 @@ function App() {
             let poolCount = (await contracts.StakerReader.poolCount()).toString();
             let tempPoolBoxList: JSX.Element[] = [];
 
+            console.log("App> pushing " + poolCount + " new PoolBoxes");
+
             for (let i = 0; i < parseInt(poolCount); i++) {
                 tempPoolBoxList.push(<PoolBox poolId={i} address={address} key={i} />);
-                console.log("App> pushing new poolBox: " + i);
             }
 
             setPoolBoxList(prev => tempPoolBoxList);
@@ -155,75 +161,16 @@ function App() {
             });
         };
 
-
-        //     let stakeEventFilter = contracts.StakerReader.filters.Stake(null, null, null);
-
-        //     contracts.StakerReader.on(stakeEventFilter, async (poolId, staker, amount, event) => {
-        //         console.log("Event: stakeEventFilter: " + poolId + ", " + staker + ", " + amount + " , block: " + event.blockNumber);
-        //         localProvider.resetEventsBlock(event.blockNumber + 1);
-
-        //         const i = parseInt(poolId.toString());
-        //         console.log("StakeAmount: " + parseFloat(ethers.utils.formatEther(amount)));
-
-        //         if (staker.toLocaleLowerCase() === address.toLowerCase()) {
-        //             console.log("Update user balance :)");
-        //             setPools(prevPools => {
-        //                 const newPoolsList = [...prevPools];
-        //                 let newPool = newPoolsList[i];
-        //                 newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
-        //                 newPool.userBalance += parseFloat(ethers.utils.formatEther(amount));
-        //                 newPoolsList[i] = newPool;
-        //                 return newPoolsList;
-        //             });
-        //         } else {
-        //             console.log("Dont update user balance :(");
-        //             setPools(prevPools => {
-        //                 const newPoolsList = [...prevPools];
-        //                 let newPool = newPoolsList[i];
-        //                 newPool.totalStaked += parseFloat(ethers.utils.formatEther(amount));
-        //                 newPoolsList[i] = newPool;
-        //                 return newPoolsList;
-        //             });
-        //         }
-        //     });
-
-        //     let executeEventFilter = contracts.StakerReader.filters.PoolExecuted(null);
-
-        //     contracts.StakerReader.on(executeEventFilter, async (poolId) => {
-        //         console.log("Event: executeEventFilter: " + poolId);
-        //         const i = parseInt(poolId.toString());
-
-        //         setPools(prevPools => {
-        //             const newPoolsList = [...prevPools];
-        //             let newPool = newPoolsList[i];
-        //             newPool.executed = true;
-        //             newPoolsList[i] = newPool;
-        //             return newPoolsList;
-        //         });
-        //     });
-
-        //     let withdrawEventFilter = contracts.StakerReader.filters.PoolWithdraw(null, null);
-
-        //     contracts.StakerReader.on(withdrawEventFilter, async (poolId) => {
-        //         console.log("Event: withdrawEventFilter: " + poolId);
-        //         const i = parseInt(poolId.toString());
-
-        //         setPools(prevPools => {
-        //             const newPoolsList = [...prevPools];
-        //             let newPool = newPoolsList[i];
-        //             newPool.userBalance = 0;
-        //             newPoolsList[i] = newPool;
-        //             return newPoolsList;
-        //         });
-        //     });
-        // };
-
         if (address && checkNetwork() && pools.length == 0) {
             console.log("Retrieve all pools created");
             getPools();
         } else {
             console.log("On populate PAS la population");
         }
+
+        return () => {
+            contracts.StakerReader.removeAllListeners();
+        };
     }, [address, network]);
 
     /* Check if the connected network is the network of the app */

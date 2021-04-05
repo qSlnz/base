@@ -36,8 +36,44 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
         console.log("PoolBox> get pool information: " + poolId);
 
         addNewPool();
+
+        let stakeEventFilter = contracts.StakerReader.filters.Stake(poolId, null, null);
+        contracts.StakerReader.on(stakeEventFilter, async (poolId, staker, amount, event) => {
+            console.log("Event: stakeEventFilter: " + poolId + ", " + staker + ", " + amount + " , block: " + event.blockNumber);
+
+            const i = parseInt(poolId.toString());
+            const formattedAmount = parseFloat(ethers.utils.formatEther(amount));
+
+            setTotalStaked(oldStakedAmount => oldStakedAmount + formattedAmount);
+
+            console.log("Staker add: > " + staker);
+            console.log("My add: >" + address);
+
+            if (staker.toLocaleLowerCase() === address.toLowerCase()) {
+                console.log("Update user balance :)");
+                setUserBalance(oldUserBalance => oldUserBalance + formattedAmount);
+            }
+        });
+
+        let executeEventFilter = contracts.StakerReader.filters.PoolExecuted(null);
+        contracts.StakerReader.on(executeEventFilter, async (poolId) => {
+            console.log("Event: executeEventFilter: " + poolId);
+
+            setExecuted(true);
+        });
+
+        let withdrawEventFilter = contracts.StakerReader.filters.PoolWithdraw(poolId, address);
+
+        contracts.StakerReader.on(withdrawEventFilter, async (poolId) => {
+            console.log("Event: withdrawEventFilter: " + poolId);
+            const i = parseInt(poolId.toString());
+
+            setUserBalance(0);
+        });
+
     }, [address]);
 
+    // We retrieve from counter the momeent where the pool thresdhold in end
     const poolTimeout = () => {
         setIsPoolEnded(true);
     };

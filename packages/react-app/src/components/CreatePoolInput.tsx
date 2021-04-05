@@ -47,7 +47,7 @@ let CreatePool = () => {
                     <form onSubmit={handleSubmit} >
                         <label>
                             <div className="dapp-createtool-label-text">
-                                Minimum amount to raise in ethers. If this amount is not reached before threshold end, the pool is canceled.
+                                Minimum amount to raise in ethers. If this amount is not reached before deadline end, the pool is canceled.
 
                             </div>
                             <input className="dapp-createtool-label-input" type="number" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
@@ -56,7 +56,7 @@ let CreatePool = () => {
                         <br></br>
                         <label>
                             <div className="dapp-createtool-label-text">
-                                Threshold: time in seconds before the pool is close.
+                                Rime in seconds before the pool close.
                             </div>
                             <input className="dapp-createtool-label-input" type="number" value={deadline} onChange={(e) => handleChange(e.currentTarget.value, 1)} />
                         </label>

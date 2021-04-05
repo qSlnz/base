@@ -14,6 +14,10 @@ let Counter = ({ remTime, poolId, timeout }: { remTime: number, poolId: number, 
             setTimer(tmptimer);
             setInitTimer(true);
         }
+
+        return () => {
+            if (timer) clearInterval(timer);
+        }
     }, [remTime]);
 
     useEffect(() => {
