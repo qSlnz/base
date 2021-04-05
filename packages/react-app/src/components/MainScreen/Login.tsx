@@ -46,14 +46,3 @@ let Login = ({ onboard, wallet }: { onboard: API, wallet: Wallet }) => {
 }
 
 export default Login;
-
-// {
-//     wallet.provider && (
-//         <div className="loginbar-button"
-//             onClick={() => { loginIn(onboard) }}>
-//             <div className="loginbar-button-text">
-//                 Connexion
-//                     </div>
-//         </div>
-//     )
-// }
