@@ -1,15 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.7.4;
 
-import "hardhat/console.sol";
-import "./ExampleExternalContract.sol"; //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
-
 contract Staker {
     /*************
      * VARIABLES *
      *************/
-
-    ExampleExternalContract public exampleExternalContract;
 
     uint256 public poolCount = 0;
 
@@ -17,6 +12,7 @@ contract Staker {
         uint256 threshold;
         uint256 deadline;
         uint256 totalStaked;
+        address payable sendTo;
         bool executed;
     }
 
@@ -25,7 +21,7 @@ contract Staker {
     /* balance for a specific address and pool */
     mapping(address => mapping(uint256 => uint256)) public balances;
     /* locking no reentrency */
-    mapping(address => mapping(uint256 => bool)) public lock;
+    bool private lock = false;
 
     /**********
      * EVENTS *
@@ -65,21 +61,11 @@ contract Staker {
         _;
     }
 
-    modifier reentrancyGuard(address _address, uint256 _poolId) {
-        require(!lock[_address][_poolId], "Dont test me bro");
-        lock[_address][_poolId] = true;
+    modifier reentrancyGuard() {
+        require(!lock, "Liar! Cheater! Thief!");
+        lock = true;
         _;
-        lock[_address][_poolId] = false;
-    }
-
-    /***************
-     * CONSTRUCTOR *
-     ***************/
-
-    constructor(address exampleExternalContractAddress) {
-        exampleExternalContract = ExampleExternalContract(
-            exampleExternalContractAddress
-        );
+        lock = false;
     }
 
     /*************
@@ -87,11 +73,13 @@ contract Staker {
      *************/
 
     /* return poolid */
-    function createPool(uint256 _threshold, uint256 _deadline)
-        public
-        returns (uint256)
-    {
+    function createPool(
+        uint256 _threshold,
+        uint256 _deadline,
+        address payable _sendTo
+    ) public returns (uint256) {
         require(_deadline > 0);
+        require(_sendTo != address(0));
 
         uint256 poolId = poolCount;
         poolCount++;
@@ -100,6 +88,7 @@ contract Staker {
         newPool.threshold = _threshold * 1 wei;
         newPool.deadline = block.timestamp + _deadline * 1 seconds;
         newPool.executed = false;
+        newPool.sendTo = _sendTo;
 
         pools[poolId] = newPool;
 
@@ -126,7 +115,7 @@ contract Staker {
         public
         poolExists(_poolId)
         poolIsEnded(_poolId)
-        reentrancyGuard(msg.sender, _poolId)
+        reentrancyGuard()
     {
         require(
             pools[_poolId].totalStaked < pools[_poolId].threshold,
@@ -150,6 +139,7 @@ contract Staker {
         public
         poolExists(_poolId)
         poolIsEnded(_poolId)
+        reentrancyGuard()
     {
         require(!pools[_poolId].executed, "The pool has already been executed");
         require(
@@ -158,8 +148,10 @@ contract Staker {
         );
 
         uint256 amountToWithdraw = pools[_poolId].totalStaked;
-        bool success =
-            exampleExternalContract.complete{value: amountToWithdraw}();
+        (bool success, ) =
+            pools[_poolId].sendTo.call{value: amountToWithdraw, gas: gasleft()}(
+                ""
+            );
 
         require(success, "Sending money failed");
 
