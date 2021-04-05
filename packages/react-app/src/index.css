@@ -413,6 +413,11 @@ span.topbar-space {
   margin-left: 1.5em;
 }
 
+.dapp-unitpool-loading {
+    font-size: 3em;
+    margin-top: 2.7em;
+}
+
 .dapp-unitpool-balance {
     background-color: rgb(255, 208, 0);
     float: right;

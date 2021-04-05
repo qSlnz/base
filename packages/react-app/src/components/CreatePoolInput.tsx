@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { SyntheticEvent, useState } from "react";
 import contracts from "../contracts/Contracts";
 
@@ -24,7 +25,7 @@ let CreatePool = () => {
         }
 
         try {
-            await contracts.StakerWriter.createPool(threshold, deadline);
+            await contracts.StakerWriter.createPool(ethers.utils.parseUnits(threshold, "ether"), deadline);
         } catch (e) {
             console.log(e);
         }
@@ -44,7 +45,7 @@ let CreatePool = () => {
                                 Minimum amount to raise in ethers. If this amount is not reached before deadline end, the pool is canceled.
 
                             </div>
-                            <input className="dapp-createtool-label-input" type="number" min="0" step="1" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
+                            <input className="dapp-createtool-label-input" type="number" min="0" step="0.001" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
                         </label>
                         <br></br>
                         <br></br>

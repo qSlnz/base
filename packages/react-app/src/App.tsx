@@ -17,7 +17,6 @@ import Blockies from "react-blockies";
 import { contracts, deployedNetwork } from './contracts';
 import { connectAllContractsReader, connectAllContractsWriter } from './contracts/Contracts';
 import GetPreviousWallet from './hooks/GetPreviousWallet';
-import Pool from './utils/type';
 
 /*****************
  * MUST BE SET *

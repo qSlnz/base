@@ -97,7 +97,7 @@ contract Staker {
         poolCount++;
 
         Pool memory newPool;
-        newPool.threshold = _threshold * 1 ether;
+        newPool.threshold = _threshold * 1 wei;
         newPool.deadline = block.timestamp + _deadline * 1 seconds;
         newPool.executed = false;
 
