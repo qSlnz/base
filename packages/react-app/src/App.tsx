@@ -1,5 +1,5 @@
 import './App.css';
-import { SideBar, CreatePool, Counter, PoolBox } from './components';
+import { SideBar, CreatePool, PoolBox } from './components';
 import { useEffect, useState } from 'react';
 
 import { ethers, Wallet } from 'ethers';
@@ -28,12 +28,12 @@ import Pool from './utils/type';
 const appNetwork = NETWORKS.mumbai;
 
 // security check the correspondance with the last hardhat deployed network
-if (appNetwork.chainId != deployedNetwork.chainId || appNetwork.name != deployedNetwork.name) {
+if (appNetwork.chainId !== deployedNetwork.chainId || appNetwork.name !== deployedNetwork.name) {
     throw "Inconsistent networks information. Deployed contracts network and app contracts are differents.";
 }
 
 // We got 3 objects connected to the blockchain
-// - mainnetProvider that is connected to the mainnet, so we can retrieve information that are only available on L1 like ENS protocole
+// - mainnetProvider that is connected to the mainnet, so we can retrieve information that are only available on L1 like ENS protocol
 // - localProvider that is connected to the app blockchain to READ informations
 // - userSigner that is defined later and is connected to the app blockchain to WRITE information (i.e make transactions)
 //
@@ -56,8 +56,6 @@ connectAllContractsReader(localProvider);
 
 function App() {
     // application datas
-    const [pools, setPools] = useState<Array<Pool>>([]);
-    const [poolCount, setPoolCount] = useState<number>(0);
     const [poolBoxList, setPoolBoxList] = useState<JSX.Element[]>([]);
 
     // network datas
@@ -112,26 +110,7 @@ function App() {
         setOnboard(onboard);
     }, []);
 
-    let addNewPool = async (poolId: number) => {
-        const res = await contracts.StakerReader.pools(poolId);
-        const userBalance = await contracts.StakerReader.balances(address, poolId);
-
-        const remainingTime = parseInt(res.deadline.toString()) - Math.round(Date.now() / 1000) < 0 ? 0 : parseInt(res.deadline.toString()) - Math.round(Date.now() / 1000);
-
-        let newPool: Pool = {
-            poolId: poolId,
-            threshold: parseFloat(ethers.utils.formatEther(res.threshold)),
-            totalStaked: parseFloat(ethers.utils.formatEther(res.totalStaked)),
-            deadline: parseInt(res.deadline.toString()),
-            executed: res.executed,
-            remainingTime: remainingTime,
-            userBalance: parseFloat(ethers.utils.formatEther(userBalance))
-        };
-
-        return newPool;
-    };
-
-    // when wallet + network is ready > add existing pools + event connection (new pool, new stake, pool execution)
+    // when wallet + network is ready > add existing pools + new pool event connection
     useEffect(() => {
         const getPools = async () => {
             let blocknumber = await localProvider.getBlockNumber()
@@ -161,7 +140,7 @@ function App() {
             });
         };
 
-        if (address && checkNetwork() && pools.length == 0) {
+        if (address && checkNetwork()) {
             console.log("Retrieve all pools created");
             getPools();
         } else {

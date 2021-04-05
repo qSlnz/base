@@ -5,7 +5,6 @@ import contracts from "../contracts/Contracts";
 
 let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     const [threshold, setThreshold] = useState(0);
-    const [deadline, setDeadline] = useState(0);
     const [totalStaked, setTotalStaked] = useState(0);
     const [executed, setExecuted] = useState(false);
     const [remainingTime, setRemainingTime] = useState(-1);
@@ -21,7 +20,6 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
 
             setThreshold(parseFloat(ethers.utils.formatEther(res.threshold)));
             setTotalStaked(parseFloat(ethers.utils.formatEther(res.totalStaked)));
-            setDeadline(parseInt(res.deadline.toString()));
             setExecuted(res.executed);
             setRemainingTime(remainingTime);
             setUserBalance(parseFloat(ethers.utils.formatEther(userBalance)));
@@ -41,7 +39,6 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
         contracts.StakerReader.on(stakeEventFilter, async (poolId, staker, amount, event) => {
             console.log("Event: stakeEventFilter: " + poolId + ", " + staker + ", " + amount + " , block: " + event.blockNumber);
 
-            const i = parseInt(poolId.toString());
             const formattedAmount = parseFloat(ethers.utils.formatEther(amount));
 
             setTotalStaked(oldStakedAmount => oldStakedAmount + formattedAmount);
@@ -66,7 +63,6 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
 
         contracts.StakerReader.on(withdrawEventFilter, async (poolId) => {
             console.log("Event: withdrawEventFilter: " + poolId);
-            const i = parseInt(poolId.toString());
 
             setUserBalance(0);
         });
@@ -96,7 +92,7 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                     </span>
                 }
                 <hr></hr>
-                <div className="dapp-unitpool-data" style={{ background: "linear-gradient(90deg, #3CB371 0%, #3CB371 " + `${l}%, ` + "rgba(2,9,53,1) " + `${l}%, ` + "rgba(2,9,53,1) 100%)" }}>
+                <div className="dapp-unitpool-data" style={{ background: `linear-gradient(90deg, #3CB371 0%, #3CB371 ${l}%, rgba(2,9,53,1) ${l}%, rgba(2,9,53,1) 100%)` }}>
                     {totalStaked} eth raised
                                         </div>
                 {totalStaked < threshold &&
@@ -122,7 +118,8 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                         async () => {
                             try {
                                 await contracts.StakerWriter.withdraw(poolId);
-                            } catch {
+                            } catch (e) {
+                                console.log(e);
                             }
                         }
                     }>
@@ -139,7 +136,8 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                         async () => {
                             try {
                                 await contracts.StakerWriter.execute(poolId);
-                            } catch {
+                            } catch (e) {
+                                console.log(e);
                             }
                         }
                     }>
@@ -175,7 +173,3 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
 }
 
 export default PoolBox;
-
-function address(address: any, poolId: number) {
-    throw new Error("Function not implemented.");
-}
