@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
-import { mainnetProvider } from "../App";
+import { mainnetProvider } from "../utils/providers";
 
 const lookupAddress = async (provider: ethers.providers.JsonRpcProvider, address: string) => {
     try {

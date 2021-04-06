@@ -19,7 +19,7 @@ dotenv.config();
  *****************/
 
 // Network use on deploiement
-const defaultNetwork = "mumbai";
+const defaultNetwork = "localhost";
 
 // Infura ID key if infura provider is use
 const INFURA_API_KEY = process.env.INFURA_ID;
@@ -175,7 +175,7 @@ const config: HardhatUserConfig = {
 };
 
 const frontEndPathConfig: { [key: string]: string } = {
-    react: "../react-app/src/contracts",
+    react: "../react-app/src/utils/contracts",
     subgraph: "../subgraph/contracts"
 };
 

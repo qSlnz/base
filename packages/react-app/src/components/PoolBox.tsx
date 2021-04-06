@@ -1,11 +1,12 @@
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Counter } from ".";
-import contracts from "../contracts/Contracts";
+import { contracts } from "../utils/contracts";
 
 let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     const [threshold, setThreshold] = useState(0);
     const [totalStaked, setTotalStaked] = useState(0);
+    const [receivingAddress, setReceivingAddress] = useState("");
     const [executed, setExecuted] = useState(false);
     const [remainingTime, setRemainingTime] = useState(-1);
     const [userBalance, setUserBalance] = useState(0);
@@ -23,6 +24,7 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
             setTotalStaked(parseFloat(ethers.utils.formatEther(res.totalStaked)));
             setExecuted(res.executed);
             setRemainingTime(remainingTime);
+            setReceivingAddress(res.sendTo);
             setUserBalance(parseFloat(ethers.utils.formatEther(userBalance)));
 
             if (remainingTime > 0) {
@@ -81,6 +83,14 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     return (
         <div className="dapp-container" key={poolId}>
             <div className="dapp-box unit">
+                {receivingAddress.length > 0 &&
+                    <span className="dapp-unitpool-address">
+                        📄
+                        <span className="dapp-unitpool-address-text">
+                            {receivingAddress}
+                        </span>
+                    </span>
+                }
                 <span className="dapp-unitpool-title">
                     Pool #{poolId}
                 </span>

@@ -102,20 +102,20 @@ export default function AddressInput(props: { value?: any; ensProvider: any; aut
 
   return (
     <div>
+      {/* <Blockies seed={currentValue} size={6} bgColor="white" color="black" />
       {scanner}
-      {/* <Input
+      { <input
         id={"0xAddress"}//name it something other than address for auto fill doxxing
         name={"0xAddress"}//name it something other than address for auto fill doxxing
         autoComplete="off"
         autoFocus={props.autoFocus}
         placeholder={props.placeholder ? props.placeholder : "address"}
-        prefix={<Blockies seed={currentValue} size={6} bgColor="white" color="black" />}
         value={ens || currentValue}
         addonAfter={scannerButton}
         onChange={(e: { target: { value: any; }; }) => {
           updateAddress(e.target.value);
         }}
-      /> */}
+      />} */}
     </div>
   );
 }

@@ -78,16 +78,17 @@ const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, cont
     return true;
 };
 
-function buildNetworkInformationFile(hre: HardhatRuntimeEnvironment) {
+const buildNetworkInformationFile = async (hre: HardhatRuntimeEnvironment) => {
     hre.deployments.log(
         "\t 🚢",
         chalk.yellow("PUBLISH"),
         "network information"
     );
 
+    let chainId = await hre.getChainId();
     let networkInformationFile = "";
 
-    networkInformationFile += `let deployedNetwork = {\n\tchainId: ${hre.network.config.chainId},\n\tname: "${hre.network.name}"\n}`;
+    networkInformationFile += `let deployedNetwork = {\n\tchainId: ${await hre.getChainId()},\n\tname: "${hre.network.name}"\n}`;
     networkInformationFile += "\n\nexport default deployedNetwork;"
 
     writeFileSync(`${frontEndPathConfig["react"]}/network.data.ts`, networkInformationFile);

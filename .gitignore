@@ -7,7 +7,7 @@ packages/hardhat/cache
 packages/hardhat/typechain
 
 # react-app
-packages/react-app/src/contracts
+packages/react-app/src/utils/contracts
 
 # subgraph
 packages/subgraph/config/config.json

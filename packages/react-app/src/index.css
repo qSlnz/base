@@ -11,11 +11,10 @@ code {
  ***********/
 
 .wrapper-sidebar {
-  background-color: whitesmoke;
   position: fixed;
   top: 0;
   left: 0;
-  height: -webkit-fill-available;
+  height: 100%;
   width: 5em;
 
   border-right: 2px solid salmon;
@@ -381,6 +380,11 @@ span.topbar-space {
   padding: 5px;
 }
 
+.dapp-createtool-label-input.address {
+  width: 23em;
+  font-size: 1em;;
+}
+
 .dapp-createtool-error {
   color: red;
   margin-top: 0.7em;
@@ -410,7 +414,6 @@ span.topbar-space {
 
 .dapp-unitpool-title {
   font-size: 2em;
-  margin-left: 1.5em;
 }
 
 .dapp-unitpool-loading {
@@ -429,6 +432,41 @@ span.topbar-space {
     padding-bottom: 0.3em;
     position: relative;
     margin-top: -0.3em;
+}
+
+.dapp-unitpool-address {
+    background-color: rgb(184, 31, 171);
+    float: left;
+    height: 2e;
+    border-radius: 12px;
+    font-size: 1.5em;
+    width: 2em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    position: relative;
+    margin-top: -0.3em;
+}
+
+.dapp-unitpool-address-text {
+  visibility: hidden;
+  background-color: brown;
+  color: #fff;
+  text-align: center;
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid grey;
+  font-size: 0.8em;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  right: -400%;
+  bottom: 100%;
+  z-index: 10000;
+
+}
+
+.dapp-unitpool-address:hover .dapp-unitpool-address-text {
+  visibility: visible;
 }
 
 .dapp-unitpool-data {

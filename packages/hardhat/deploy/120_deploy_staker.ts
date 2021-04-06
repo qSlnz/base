@@ -4,11 +4,9 @@ import { DeployFunction, DeployResult } from 'hardhat-deploy/types';
 const func: DeployFunction = async function ({ getNamedAccounts, deployments }) {
     const { deployer } = await getNamedAccounts();
 
-    const ExampleExternalContractAddress = (await deployments.get("ExampleExternalContract")).address;
 
     let Staker: DeployResult = await deployments.deploy('Staker', {
         from: deployer,
-        args: [ExampleExternalContractAddress],
         log: true
     });
 
