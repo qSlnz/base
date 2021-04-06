@@ -19,7 +19,8 @@ interface NetworkItem {
 interface Networks {
     localhost: NetworkItem,
     polygon: NetworkItem,
-    mumbai: NetworkItem
+    mumbai: NetworkItem,
+    kovan: NetworkItem
 };
 
 const NETWORKS: Networks = {
@@ -60,7 +61,19 @@ const NETWORKS: Networks = {
         blockExplorer: "https://explorer-mumbai.maticvigil.com/",
         nativeCurrency: {
             name: "testnet Matic",
-            symbol: "testMatic",
+            symbol: "tMatic",
+            decimals: 18
+        }
+    },
+    kovan: {
+        chainName: "kovan",
+        color: "#2eeba7",
+        chainId: 42,
+        rpcUrl: "https://kovan.infura.io/v3/4be20cca3d6f44f89a5f7f359ab3acfa",
+        blockExplorer: "https://kovan.etherscan.io/",
+        nativeCurrency: {
+            name: "kovan Ethers",
+            symbol: "kEth",
             decimals: 18
         }
     }

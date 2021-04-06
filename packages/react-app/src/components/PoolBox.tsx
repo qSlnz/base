@@ -114,13 +114,13 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                 }
                 {isDataLoaded &&
                     <div className="dapp-unitpool-data" style={{ background: `linear-gradient(90deg, #3CB371 0%, #3CB371 ${l}%, rgba(2,9,53,1) ${l}%, rgba(2,9,53,1) 100%)` }}>
-                        {totalStaked} eth raised
+                        {totalStaked} {appNetwork.nativeCurrency.symbol} raised
                     </div>
                 }
                 {isDataLoaded && totalStaked < threshold &&
                     <div className="dapp-unitpool-data">
-                        Value to reach: {threshold} eth
-                                                </div>
+                        Value to reach: {threshold} {appNetwork.nativeCurrency.symbol}
+                    </div>
                 }
                 {isDataLoaded && isDataLoaded && totalStaked >= threshold &&
                     <div className="dapp-unitpool-data" style={{ backgroundColor: "#3CB371" }}>
@@ -186,8 +186,8 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                             }
                         }
                     }>
-                        ❤️ Contribute 0.1 ether
-                        </div>
+                        ❤️ Contribute 0.1 {appNetwork.nativeCurrency.symbol}
+                    </div>
                 }
             </div>
         </div>

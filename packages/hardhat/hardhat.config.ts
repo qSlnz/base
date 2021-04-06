@@ -19,7 +19,7 @@ dotenv.config();
  *****************/
 
 // Network use on deploiement
-const defaultNetwork = "localhost";
+const defaultNetwork = "mumbai";
 
 // Infura ID key if infura provider is use
 const INFURA_API_KEY = process.env.INFURA_ID;
@@ -40,8 +40,6 @@ let mnemonic = (): string => {
 
     return "";
 };
-
-
 
 const masterAppAccount: string = mnemonic();
 
@@ -106,7 +104,7 @@ const networks: NetworksUserConfig = {
     mumbai: {
         chainId: 80001,
         gasPrice: 1000000000,
-        url: "https://rpc-mumbai.maticvigil.com/v1/96960cf40f5d9a5907db9c2223e9c199cb06b131",
+        url: "https://rpc-mumbai.maticvigil.com/",
         accounts: {
             mnemonic: masterAppAccount,
         }

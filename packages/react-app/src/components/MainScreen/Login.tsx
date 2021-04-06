@@ -1,9 +1,11 @@
 import { API } from "bnc-onboard/dist/src/interfaces";
 import { Wallet } from "ethers/lib/ethers";
 import React from "react";
+import networkSwitcher from "../../utils/networkSwitcher";
 
 let loginIn = async (onboard: API) => {
     await onboard.walletSelect();
+    networkSwitcher();
     await onboard.walletCheck();
 };
 

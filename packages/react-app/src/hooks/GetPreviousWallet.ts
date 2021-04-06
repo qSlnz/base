@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { API as OnboardApi } from 'bnc-onboard/dist/src/interfaces';
+import networkSwitcher from "../utils/networkSwitcher";
 
 const GetPreviousWallet = (onboard: OnboardApi | undefined) => {
     useEffect(() => {
@@ -12,6 +13,7 @@ const GetPreviousWallet = (onboard: OnboardApi | undefined) => {
                 const walletSelected = await onboard.walletSelect(previouslySelectedWallet);
 
                 if (walletSelected) {
+                    networkSwitcher();
                     await onboard.walletCheck();
                 }
             };

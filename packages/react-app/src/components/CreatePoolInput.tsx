@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { SyntheticEvent, useCallback, useState } from "react";
+import { appNetwork } from "../Constants";
 import { contracts } from "../utils/contracts";
 import { mainnetProvider } from "../utils/providers";
 
@@ -17,7 +18,6 @@ let CreatePool = () => {
     }
 
     function handleAddressChange(address: string) {
-        console.log(address);
         setReceivingAddress(address);
 
         try {
@@ -70,7 +70,7 @@ let CreatePool = () => {
                 handleAddressChange(address);
             }
         },
-        [handleAddressChange],
+        [],
     );
 
     return (
@@ -84,7 +84,7 @@ let CreatePool = () => {
                     <form onSubmit={handleSubmit} >
                         <label>
                             <div className="dapp-createtool-label-text">
-                                Minimum amount to raise in ethers
+                                Minimum amount to raise in {appNetwork.nativeCurrency.name}
 
                             </div>
                             <input className="dapp-createtool-label-input" type="number" min="0" step="0.001" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
@@ -117,7 +117,3 @@ let CreatePool = () => {
 }
 
 export default CreatePool;
-
-function setValue(address: any) {
-    throw new Error("Function not implemented.");
-}

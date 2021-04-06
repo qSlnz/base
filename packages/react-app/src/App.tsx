@@ -1,22 +1,25 @@
-import './App.css';
-import { SideBar, CreatePool, PoolBox } from './components';
 import { useEffect, useState } from 'react';
-
 import { ethers, Wallet } from 'ethers';
 import { API as OnboardApi, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import { API as NotifyAPI } from 'bnc-notify/dist/types/notify';
-
-
 import { initNotify, initOnboard } from './utils/initOnboard';
-import TopBar from './components/MainScreen/TopBar';
-import useLookupAddress from './hooks/LookupAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 import Blockies from "react-blockies";
+
+import './App.css';
+/* Components */
+import { SideBar, CreatePool, PoolBox } from './components';
+import TopBar from './components/MainScreen/TopBar';
+/* hooks */
+import useLookupAddress from './hooks/LookupAddress';
+import GetPreviousWallet from './hooks/GetPreviousWallet';
+/* utils*/
 import { contracts, deployedNetwork } from './utils/contracts';
 import { connectAllContractsWriter } from './utils/contracts/Contracts';
-import GetPreviousWallet from './hooks/GetPreviousWallet';
 import { localProvider } from './utils/providers';
+import networkSwitcher from './utils/networkSwitcher';
+
 import { appNetwork } from './Constants';
 
 
@@ -155,6 +158,7 @@ function App() {
                                     onClick={async () => {
                                         const walletSelected = await onboard.walletSelect();
                                         if (walletSelected) {
+                                            networkSwitcher();
                                             await onboard.walletCheck();
                                         }
                                     }}>
@@ -166,7 +170,7 @@ function App() {
 
                             {wallet.provider && !isNetworkCorrect && (
                                 <div className="loginbar-button badnetwork"
-                                    onClick={async () => await onboard.walletCheck()}>
+                                    onClick={async () => { networkSwitcher(); await onboard.walletCheck(); }}>
                                     <div className="loginbar-button-text">
                                         <FontAwesomeIcon icon={faWaveSquare} />
                                         &nbsp;&nbsp;&nbsp;Wrong Network

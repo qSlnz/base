@@ -46,17 +46,14 @@ contract Staker {
     }
 
     modifier poolIsEnded(uint256 _poolId) {
-        require(
-            pools[_poolId].deadline < block.timestamp,
-            "This pool is live bro"
-        );
+        require(pools[_poolId].deadline < block.timestamp, "This pool is live");
         _;
     }
 
     modifier poolIsLive(uint256 _poolId) {
         require(
             pools[_poolId].deadline >= block.timestamp,
-            "This pool is done bro"
+            "This pool is done"
         );
         _;
     }
@@ -103,7 +100,7 @@ contract Staker {
         poolExists(_poolId)
         poolIsLive(_poolId)
     {
-        require(msg.value > 0, "Gimme yo money bro");
+        require(msg.value > 0, "Gimme yo money");
 
         balances[msg.sender][_poolId] += msg.value;
         pools[_poolId].totalStaked += msg.value;
@@ -119,7 +116,7 @@ contract Staker {
     {
         require(
             pools[_poolId].totalStaked < pools[_poolId].threshold,
-            "The pool is a success, your ethers are mine hahaha. bro."
+            "The pool is a success, your ethers are mine hahaha."
         );
 
         uint256 amountToWithdraw = balances[msg.sender][_poolId];
@@ -144,7 +141,7 @@ contract Staker {
         require(!pools[_poolId].executed, "The pool has already been executed");
         require(
             pools[_poolId].totalStaked >= pools[_poolId].threshold,
-            "The pool didnt reach the threshold amout, go withdraw your ethers using withdraw function bro"
+            "The pool didnt reach the threshold amout, go withdraw your ethers using withdraw function"
         );
 
         uint256 amountToWithdraw = pools[_poolId].totalStaked;
