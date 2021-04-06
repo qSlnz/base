@@ -157,6 +157,7 @@ code {
   background-color: #3CB371;
   text-transform: none;
   display: inline-block;
+  z-index: 10;
 }
 
 .loginbar-button-address {
@@ -168,7 +169,7 @@ code {
 }
 
 .loginbar-button-identicon {
-  float: right;
+  float: left;
 }
 
 .identicon {
@@ -208,6 +209,30 @@ code {
 .loginbar-disconnect-button:hover {
   color: white;
   cursor: pointer;
+}
+
+.loginbar-button-network {
+  background-color: #2bbdf7;
+  color: white;
+  font-size: 1.5em;
+  font-family: Quicksand;
+  text-transform: capitalize;
+  text-decoration: none;
+  cursor: pointer;
+
+  position: relative;
+  left: 5px;
+
+  width: fit-content;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+  padding-top: 0.05em;
+  padding-bottom: 0.05em;
+
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+
+  z-index: 5;
 }
 
 /**************
@@ -432,6 +457,29 @@ span.topbar-space {
     padding-bottom: 0.3em;
     position: relative;
     margin-top: -0.3em;
+    cursor: pointer;
+}
+
+.dapp-unitpool-balance-text {
+  visibility: hidden;
+  background-color: brown;
+  color: #fff;
+  text-align: center;
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid grey;
+  font-size: 0.8em;
+  white-space: nowrap;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  right: -300%;
+  bottom: 100%;
+  z-index: 10000;
+}
+
+.dapp-unitpool-balance:hover .dapp-unitpool-balance-text {
+  visibility: visible;
 }
 
 .dapp-unitpool-address {

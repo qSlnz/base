@@ -99,6 +99,11 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
                 {totalStaked > 0 &&
                     <span className="dapp-unitpool-balance">
                         {userBalance}
+                        {userBalance > 0 &&
+                            <span className="dapp-unitpool-balance-text">
+                                You contribute at this pool with {userBalance} {appNetwork.nativeCurrency.symbol}
+                            </span>
+                        }
                     </span>
                 }
                 {totalStaked <= 0 &&

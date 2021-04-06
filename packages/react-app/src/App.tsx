@@ -179,13 +179,19 @@ function App() {
                             )}
 
                             {wallet.provider && isNetworkCorrect && (
-                                <a className="loginbar-button connected" target="_blank" href={appNetwork.blockExplorer + "/address/" + address}>
+                                <a className="loginbar-button-network" style={{ backgroundColor: appNetwork.color }} target="_blank" href={appNetwork.faucet}>
+                                    {appNetwork.chainName}
+                                </a>
+                            )}
+
+                            {wallet.provider && isNetworkCorrect && (
+                                <a className="loginbar-button connected" target="_blank" href={appNetwork.blockExplorer + "address/" + address}>
+                                    <span className="loginbar-button-identicon">
+                                        <Blockies seed={address} size={6} bgColor="white" color="black" />
+                                    </span>
                                     <div className="loginbar-button-connect-wrapper">
                                         <span className="loginbar-button-address">
                                             {ens.substr(0, 1).toUpperCase() + ens.substr(1, 11) || address.substr(0, 6) + "..." + address.substr(address.length - 4, 4)}
-                                        </span>
-                                        <span className="loginbar-button-identicon">
-                                            <Blockies seed={address} size={6} bgColor="white" color="black" />
                                         </span>
                                     </div>
                                 </a>
