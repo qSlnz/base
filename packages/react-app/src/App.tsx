@@ -21,8 +21,8 @@ import { appNetwork } from './Constants';
 
 
 // security check the correspondance with the last hardhat deployed network
-if (appNetwork.chainId !== deployedNetwork.chainId || appNetwork.name !== deployedNetwork.name) {
-    throw "Inconsistent networks information. Deployed contracts network and app contracts are differents.";
+if (appNetwork.chainId !== deployedNetwork.chainId || appNetwork.chainName !== deployedNetwork.name) {
+    throw "Inconsistent networks information. Last deployed contracts network and app contracts are differents.";
 }
 
 /*******
@@ -30,10 +30,7 @@ if (appNetwork.chainId !== deployedNetwork.chainId || appNetwork.name !== deploy
  *******/
 
 function App() {
-    // application datas
-    const [poolBoxList, setPoolBoxList] = useState<JSX.Element[]>([]);
-
-    // network datas
+    // blockchain network datas
     const [address, setAddress] = useState<string>("");
     const [network, setNetwork] = useState<number>(0);
     const [balance, setBalance] = useState<string>("");
@@ -44,6 +41,7 @@ function App() {
     // UI datas
     const [activeLoadingScreen, setActiveLoadingScreen] = useState<boolean>(false);
     const [isNetworkCorrect, setIsNetworkCorrect] = useState<boolean>(true);
+    const [poolBoxList, setPoolBoxList] = useState<JSX.Element[]>([]);
 
     GetPreviousWallet(onboard);
 
@@ -226,123 +224,5 @@ function App() {
         </div >
     );
 };
-
-// @ts-ignore
-// if (typeof window.ethereum !== 'undefined') {
-//     console.log('MetaMask is installed!');
-//     // @ts-ignore
-//     interface AddEthereumChainParameter {
-//         chainId: string; // A 0x-prefixed hexadecimal string
-//         chainName: string;
-//         nativeCurrency: {
-//             name: string;
-//             symbol: string; // 2-6 characters long
-//             decimals: 18;
-//         };
-//         rpcUrls: string[];
-//         blockExplorerUrls?: string[];
-//         iconUrls?: string[]; // Currently ignored.
-//     }
-
-//     let a: AddEthereumChainParameter = {
-//         chainId: "0x89",
-//         chainName: "polygon",
-//         nativeCurrency: {
-//             name: "Matic",
-//             symbol: "Matic",
-//             decimals: 18
-//         },
-//         rpcUrls: ["https://rpc-mainnet.maticvigil.com"],
-//         blockExplorerUrls: ["https://explorer-mainnet.maticvigil.com//"]
-//     };
-//     // @ts-ignore
-//     window.ethereum.request({ method: 'wallet_addEthereumChain', params: [a] });
-// }
-
-
-// const walletChecks = [
-//     { checkName: 'derivationPath' },
-//     { checkName: 'accounts' },
-//     { checkName: 'connect' },
-//     { checkName: 'network' },
-//     { checkName: 'balance', minimumBalance: '1000000' }
-// ];
-
-// const onboard = Onboard({
-//     networkId: appNetwork.chainId,
-//     subscriptions: {
-//         wallet: (wallet) => {
-//             console.log("Onboard Subscription:");
-//             console.log(wallet);
-//             if (wallet.type == "injected") {
-//                 provider = new ethers.providers.Web3Provider(wallet.provider);
-//             } else if (wallet.type == "hardware") {
-//                 provider = new ethers.providers.JsonRpcProvider(wallet.provider)
-//             } else if (wallet.type == "sdk") {
-//                 console.log(">> sdk");
-//             }
-
-//             provider.on("network", (newNetwork: any, oldNetwork: any) => {
-//                 // When a Provider makes its initial connection, it emits a "network"
-//                 // event with a null oldNetwork along with the newNetwork. So, if the
-//                 // oldNetwork exists, it represents a changing network
-//                 console.log("test");
-//                 console.log(newNetwork);
-//                 console.log(oldNetwork);
-//                 if (oldNetwork) {
-//                     window.location.reload();
-//                 }
-//             });
-//         }
-//     },
-//     walletSelect: {
-//         wallets: [
-//             { walletName: "metamask", preferred: true },
-//             {
-//                 walletName: 'ledger',
-//                 rpcUrl: appNetwork.rpcUrl
-//             },
-//             {
-//                 walletName: "walletConnect",
-//                 infuraKey: "c6620abc4b344c1d97d7205817a290ce"
-//             },
-//             { walletName: "coinbase", preferred: true },
-//         ]
-//     },
-//     walletCheck: walletChecks
-// });
-
-
-
-/*********
- * UTILS *
- *********/
-
-// Connexion au wallet
-// const onboardLogin = async () => {
-//     await onboard.walletSelect();
-
-//     /* Si l'utilisateur a bien sélectionné un wallet */
-//     if (provider) {
-//         await onboard.walletCheck();
-//     }
-// };
-
-// Déconnexion du joueur
-// const onboardLogout = async () => {
-//     await onboard.walletReset();
-
-//     setTimeout(() => {
-//         window.location.reload();
-//     }, 1);
-// };
-
-// Gestion du changement de chaîne
-//     window.ethereum && window.ethereum.on('chainChanged', chainId => {
-//         setTimeout(() => {
-//             window.location.reload();
-//         }, 1);
-//     });
-
 
 export default App;

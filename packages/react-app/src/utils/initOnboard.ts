@@ -1,16 +1,16 @@
-import { Network } from "./networks"
+import { NetworkItem } from "./networks"
 import Onboard from "bnc-onboard";
 import { API, Subscriptions } from "bnc-onboard/dist/src/interfaces";
 import Notify from 'bnc-notify'
 
 let blocknativeId = "16b95b38-9869-4d58-b978-82322a52ff6d";
 
-export function initOnboard(subscriptions: Subscriptions, appNetwork: Network): API {
+export function initOnboard(subscriptions: Subscriptions, appNetwork: NetworkItem): API {
     console.log("On crée le wallet onboard");
     let onboard = Onboard({
         dappId: blocknativeId,
         networkId: appNetwork.chainId,
-        networkName: appNetwork.name,
+        networkName: appNetwork.chainName,
         subscriptions: subscriptions,
         walletSelect: {
             wallets: [
@@ -82,7 +82,7 @@ export function initOnboard(subscriptions: Subscriptions, appNetwork: Network): 
     // })
 }
 
-export function initNotify(appNetwork: Network) {
+export function initNotify(appNetwork: NetworkItem) {
     return Notify({
         dappId: blocknativeId,
         networkId: appNetwork.chainId

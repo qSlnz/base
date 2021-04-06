@@ -4,6 +4,7 @@ import { Counter } from ".";
 import { appNetwork } from "../Constants";
 import { contracts } from "../utils/contracts";
 
+
 let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     const [threshold, setThreshold] = useState(0);
     const [totalStaked, setTotalStaked] = useState(0);
