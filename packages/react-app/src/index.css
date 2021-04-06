@@ -165,6 +165,7 @@ code {
   font-family: Quicksand;
   font-weight: bold;
   margin-top: -0.1em;
+  text-decoration: none;
 }
 
 .loginbar-button-identicon {
@@ -381,8 +382,8 @@ span.topbar-space {
 }
 
 .dapp-createtool-label-input.address {
-  width: 23em;
-  font-size: 1em;;
+  width: 25em;
+  font-size: 0.9em;
 }
 
 .dapp-createtool-error {
@@ -445,6 +446,8 @@ span.topbar-space {
     padding-bottom: 0.3em;
     position: relative;
     margin-top: -0.3em;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .dapp-unitpool-address-text {

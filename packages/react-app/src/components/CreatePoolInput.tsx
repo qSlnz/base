@@ -7,7 +7,7 @@ import { mainnetProvider } from "../utils/providers";
 let CreatePool = () => {
     const [threshold, setThreshold] = useState("0");
     const [deadline, setDeadline] = useState("0");
-    const [receivingAddress, setReceivingAddress] = useState("0xabcdef");
+    const [receivingAddress, setReceivingAddress] = useState("0xAe5a3... or domain.eth");
     const [showError, setShowError] = useState(false);
     const [showInvalidAddress, setShowInvalidAddress] = useState(false);
 
@@ -19,6 +19,12 @@ let CreatePool = () => {
     function handleAddressChange(address: string) {
         console.log(address);
         setReceivingAddress(address);
+
+        try {
+            ethers.utils.getAddress(address);
+            setShowInvalidAddress(false);
+        } catch {
+        }
     }
 
     let handleSubmit = async (event: SyntheticEvent) => {
@@ -33,7 +39,7 @@ let CreatePool = () => {
         }
 
         try {
-            let addr = ethers.utils.getAddress(receivingAddress);
+            ethers.utils.getAddress(receivingAddress);
             setShowInvalidAddress(false);
         } catch {
             setShowInvalidAddress(true);
@@ -61,9 +67,7 @@ let CreatePool = () => {
                     } catch (e) { }
                 }
 
-                if (typeof handleAddressChange === "function") {
-                    handleAddressChange(address);
-                }
+                handleAddressChange(address);
             }
         },
         [handleAddressChange],
@@ -96,7 +100,7 @@ let CreatePool = () => {
                             <div className="dapp-createtool-label-text">
                                 Address that will receive the pool funds
                             </div>
-                            <input className="dapp-createtool-label-input address" type="text" min="0" step="1" maxLength={42} value={receivingAddress} onChange={(e) => updateAddress(e.currentTarget.value)} />
+                            <input className="dapp-createtool-label-input address" spellCheck="false" type="text" min="0" step="1" maxLength={42} value={receivingAddress} onChange={(e) => updateAddress(e.currentTarget.value)} />
                         </label>
                         <br></br>
                         <input className="dapp-createpool-button" type="submit" value="📖 Create pool" />

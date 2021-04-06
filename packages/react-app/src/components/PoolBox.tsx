@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Counter } from ".";
 import { contracts } from "../utils/contracts";
+import { appNetwork } from "../utils/providers";
 
 let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     const [threshold, setThreshold] = useState(0);
@@ -84,12 +85,12 @@ let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
         <div className="dapp-container" key={poolId}>
             <div className="dapp-box unit">
                 {receivingAddress.length > 0 &&
-                    <span className="dapp-unitpool-address">
+                    <a className="dapp-unitpool-address" target="_blank" href={appNetwork.blockExplorer + "/address/" + receivingAddress}>
                         📄
                         <span className="dapp-unitpool-address-text">
                             {receivingAddress}
                         </span>
-                    </span>
+                    </a>
                 }
                 <span className="dapp-unitpool-title">
                     Pool #{poolId}

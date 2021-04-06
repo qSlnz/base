@@ -172,9 +172,9 @@ function App() {
                             {wallet.provider && isNetworkCorrect && (
                                 <div className="loginbar-button connected">
                                     <div className="loginbar-button-connect-wrapper">
-                                        <span className="loginbar-button-address">
+                                        <a className="loginbar-button-address" target="_blank" href={appNetwork.blockExplorer + "/address/" + address}>
                                             {ens.substr(0, 1).toUpperCase() + ens.substr(1, 11) || address.substr(0, 6) + "..." + address.substr(address.length - 4, 4)}
-                                        </span>
+                                        </a>
                                         <span className="loginbar-button-identicon">
                                             <Blockies seed={address} size={6} bgColor="white" color="black" />
                                         </span>
