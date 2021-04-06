@@ -64,6 +64,13 @@ code {
   text-transform: uppercase;
 }
 
+.sidebar-scaffold {
+  width: 3em;
+  position: absolute;
+  left: 1em;
+  bottom: 2em;
+}
+
 /************
  * LOGINBAR *
  ************/
@@ -332,7 +339,7 @@ span.topbar-space {
 
  .appZone {
   width: 100%;
-  height: calc(100% - 7em);
+  height: calc(100% - 5.8em);
 
   /* display: grid;
   grid-template-columns: repeat(20%, 5);
