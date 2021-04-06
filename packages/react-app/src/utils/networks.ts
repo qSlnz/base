@@ -1,17 +1,19 @@
-interface Network {
+interface NetworkItem {
     name: string,
     chainId: number,
     rpcUrl: string,
-    color?: string,
-    blockExplorer?: string,
+    color: string,
+    blockExplorer: string,
     price?: number,
     gasPrice?: number,
     faucet?: string
 };
 
 interface Networks {
-    [index: string]: Network
-};
+    localhost: NetworkItem,
+    polygon: NetworkItem,
+    mumbai: NetworkItem
+}
 
 const NETWORKS: Networks = {
     localhost: {
@@ -43,4 +45,3 @@ const NETWORKS: Networks = {
 };
 
 export { NETWORKS };
-export type { Network, Networks };

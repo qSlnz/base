@@ -30,7 +30,6 @@ code {
   ), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAATUlEQVQYV1WNwQ3AMAwCISM4oyVjpqPVI4SKyJVaHpbQGWCPKRHIexGWrwhGTNlnFijKeoD2VmOj0yfxApuIIVe59gd6jNq7vuCUl4gHApwgDPY3wjYAAAAASUVORK5CYII=) repeat;
   background-blend-mode: multiply;
   
-
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -110,6 +109,7 @@ code {
 
   border: 2px solid transparent;
   border-radius: 12px;
+  text-decoration: none;
 }
 
 .loginbar-button:hover {
@@ -165,7 +165,6 @@ code {
   font-family: Quicksand;
   font-weight: bold;
   margin-top: -0.1em;
-  text-decoration: none;
 }
 
 .loginbar-button-identicon {

@@ -13,10 +13,17 @@ import useLookupAddress from './hooks/LookupAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
 import Blockies from "react-blockies";
-import { contracts } from './utils/contracts';
+import { contracts, deployedNetwork } from './utils/contracts';
 import { connectAllContractsWriter } from './utils/contracts/Contracts';
 import GetPreviousWallet from './hooks/GetPreviousWallet';
-import { appNetwork, localProvider } from './utils/providers';
+import { localProvider } from './utils/providers';
+import { appNetwork } from './Constants';
+
+
+// security check the correspondance with the last hardhat deployed network
+if (appNetwork.chainId !== deployedNetwork.chainId || appNetwork.name !== deployedNetwork.name) {
+    throw "Inconsistent networks information. Deployed contracts network and app contracts are differents.";
+}
 
 /*******
  * APP *
@@ -170,16 +177,16 @@ function App() {
                             )}
 
                             {wallet.provider && isNetworkCorrect && (
-                                <div className="loginbar-button connected">
+                                <a className="loginbar-button connected" target="_blank" href={appNetwork.blockExplorer + "/address/" + address}>
                                     <div className="loginbar-button-connect-wrapper">
-                                        <a className="loginbar-button-address" target="_blank" href={appNetwork.blockExplorer + "/address/" + address}>
+                                        <span className="loginbar-button-address">
                                             {ens.substr(0, 1).toUpperCase() + ens.substr(1, 11) || address.substr(0, 6) + "..." + address.substr(address.length - 4, 4)}
-                                        </a>
+                                        </span>
                                         <span className="loginbar-button-identicon">
                                             <Blockies seed={address} size={6} bgColor="white" color="black" />
                                         </span>
                                     </div>
-                                </div>
+                                </a>
                             )}
 
                             {wallet.provider && (

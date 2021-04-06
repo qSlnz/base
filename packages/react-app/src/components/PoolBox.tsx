@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Counter } from ".";
+import { appNetwork } from "../Constants";
 import { contracts } from "../utils/contracts";
-import { appNetwork } from "../utils/providers";
 
 let PoolBox = ({ poolId, address }: { poolId: number, address: string }) => {
     const [threshold, setThreshold] = useState(0);
