@@ -5,6 +5,7 @@ packages/hardhat/*.txt
 packages/hardhat/artifacts
 packages/hardhat/cache
 packages/hardhat/typechain
+packages/hardhat/deployments
 
 # react-app
 packages/react-app/src/utils/contracts
