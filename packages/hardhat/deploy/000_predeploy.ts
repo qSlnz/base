@@ -9,6 +9,7 @@ const func: DeployFunction = async function ({ deployments, config }) {
     deployments.log(
         chalk.bgYellow.black(" 📡 DEPLOYING CONTRACTS ON BLOCKCHAIN ")
     );
+
     deployments.log(
         "\t ☀️ SELECTED BLOCKCHAIN: " + chalk.red(config.defaultNetwork)
     );
