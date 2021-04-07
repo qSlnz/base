@@ -104,7 +104,7 @@ const networks: NetworksUserConfig = {
     mumbai: {
         chainId: 80001,
         gasPrice: 1000000000,
-        url: "https://rpc-mumbai.maticvigil.com/",
+        url: "https://rpc-mumbai.maticvigil.com/v1/96960cf40f5d9a5907db9c2223e9c199cb06b131",
         accounts: {
             mnemonic: masterAppAccount,
         }
