@@ -19,6 +19,8 @@
         "balance": "yarn workspace @project73/hardhat balance",
         "send": "yarn workspace @project73/hardhat send",
         "account": "yarn workspace @project73/hardhat account",
-        "generate": "yarn workspace @project73/hardhat generate"
+        "generate": "yarn workspace @project73/hardhat generate",
+        "build": "yarn workspace @project73/hardhat deploy && yarn workspace @project73/react-app build",
+        "surge": "yarn workspace @project73/react-app surge"
     }
 }

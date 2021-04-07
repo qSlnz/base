@@ -84,7 +84,7 @@ let CreatePool = () => {
                     <form onSubmit={handleSubmit} >
                         <label>
                             <div className="dapp-createtool-label-text">
-                                Minimum amount to raise in {appNetwork.nativeCurrency.name}
+                                Minimum amount to raise (in {appNetwork.nativeCurrency.name})
 
                             </div>
                             <input className="dapp-createtool-label-input" type="number" min="0" step="0.001" value={threshold} onChange={(e) => handleChange(e.currentTarget.value, 0)} />
@@ -92,7 +92,7 @@ let CreatePool = () => {
                         <br></br>
                         <label>
                             <div className="dapp-createtool-label-text">
-                                Time in seconds before the pool close
+                                Time before the pool close (in seconds)
                             </div>
                             <input className="dapp-createtool-label-input" type="number" min="0" step="1" value={deadline} onChange={(e) => handleChange(e.currentTarget.value, 1)} />
                         </label>
