@@ -19,7 +19,7 @@ dotenv.config();
  *****************/
 
 // Network use on deploiement
-const defaultNetwork = "mumbai";
+const defaultNetwork = "hardhat";
 
 // Infura ID key if infura provider is use
 const INFURA_API_KEY = process.env.INFURA_ID;
@@ -136,6 +136,15 @@ let appCompilers: SolidityUserConfig = {
         },
         {
             version: "0.7.4",
+            settings: {
+                optimizer: {
+                    enabled: true,
+                    runs: 200
+                }
+            }
+        },
+        {
+            version: "0.8.3",
             settings: {
                 optimizer: {
                     enabled: true,

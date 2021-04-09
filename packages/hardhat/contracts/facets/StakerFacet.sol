@@ -1,28 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.4;
+pragma solidity >=0.8.3;
 
-contract Staker {
-    /*************
-     * VARIABLES *
-     *************/
+import "../storage/PoolsStorage.sol";
 
-    uint256 public poolCount = 0;
-
-    struct Pool {
-        uint256 threshold;
-        uint256 deadline;
-        uint256 totalStaked;
-        address payable sendTo;
-        bool executed;
-    }
-
-    mapping(uint256 => Pool) public pools;
-
-    /* balance for a specific address and pool */
-    mapping(address => mapping(uint256 => uint256)) public balances;
-    /* locking no reentrency */
-    bool private lock = false;
-
+contract StakerFacet {
     /**********
      * EVENTS *
      **********/
