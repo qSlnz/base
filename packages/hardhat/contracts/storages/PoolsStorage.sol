@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.4;
+pragma solidity >=0.8.3;
 
 library PoolsStorage {
     bytes32 constant STORAGE_POSITION = keccak256("myapp.pools");
@@ -13,17 +13,13 @@ library PoolsStorage {
     }
 
     struct DiamondStorage {
-        uint256 poolCount = 0;
-        bool lock = false;
+        uint256 poolCount;
+        bool lock;
         mapping(uint256 => Pool) pools;
         mapping(address => mapping(uint256 => uint256)) balances;
     }
 
-    function diamondStorage()
-        internal
-        pure
-        returns (DiamondStorage storage diamond)
-    {
+    function get() internal pure returns (DiamondStorage storage diamond) {
         bytes32 position = STORAGE_POSITION;
         assembly {
             diamond.slot := position

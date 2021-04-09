@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.3;
 
-import "../storage/PoolsStorage.sol";
+import "./../storages/PoolsStorage.sol";
 
 contract StakerFacet {
     /**********
@@ -22,28 +22,35 @@ contract StakerFacet {
      *************/
 
     modifier poolExists(uint256 _poolId) {
-        require(_poolId < poolCount, "Wtf bro this pool has never existed");
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+        require(_poolId < ds.poolCount, "Wtf bro this pool has never existed");
         _;
     }
 
     modifier poolIsEnded(uint256 _poolId) {
-        require(pools[_poolId].deadline < block.timestamp, "This pool is live");
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+        require(
+            ds.pools[_poolId].deadline < block.timestamp,
+            "This pool is live"
+        );
         _;
     }
 
     modifier poolIsLive(uint256 _poolId) {
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
         require(
-            pools[_poolId].deadline >= block.timestamp,
+            ds.pools[_poolId].deadline >= block.timestamp,
             "This pool is done"
         );
         _;
     }
 
     modifier reentrancyGuard() {
-        require(!lock, "Liar! Cheater! Thief!");
-        lock = true;
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+        require(!ds.lock, "Liar! Cheater! Thief!");
+        ds.lock = true;
         _;
-        lock = false;
+        ds.lock = false;
     }
 
     /*************
@@ -59,16 +66,18 @@ contract StakerFacet {
         require(_deadline > 0);
         require(_sendTo != address(0));
 
-        uint256 poolId = poolCount;
-        poolCount++;
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
 
-        Pool memory newPool;
+        uint256 poolId = ds.poolCount;
+        ds.poolCount++;
+
+        PoolsStorage.Pool memory newPool;
         newPool.threshold = _threshold * 1 wei;
         newPool.deadline = block.timestamp + _deadline * 1 seconds;
         newPool.executed = false;
         newPool.sendTo = _sendTo;
 
-        pools[poolId] = newPool;
+        ds.pools[poolId] = newPool;
 
         emit PoolCreation(poolId, msg.sender);
 
@@ -83,8 +92,10 @@ contract StakerFacet {
     {
         require(msg.value > 0, "Gimme yo money");
 
-        balances[msg.sender][_poolId] += msg.value;
-        pools[_poolId].totalStaked += msg.value;
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+
+        ds.balances[msg.sender][_poolId] += msg.value;
+        ds.pools[_poolId].totalStaked += msg.value;
 
         emit Stake(_poolId, msg.sender, msg.value);
     }
@@ -95,12 +106,14 @@ contract StakerFacet {
         poolIsEnded(_poolId)
         reentrancyGuard()
     {
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+
         require(
-            pools[_poolId].totalStaked < pools[_poolId].threshold,
+            ds.pools[_poolId].totalStaked < ds.pools[_poolId].threshold,
             "The pool is a success, your ethers are mine hahaha."
         );
 
-        uint256 amountToWithdraw = balances[msg.sender][_poolId];
+        uint256 amountToWithdraw = ds.balances[msg.sender][_poolId];
 
         require(amountToWithdraw > 0, "Nothing you can withdraw here");
 
@@ -108,7 +121,7 @@ contract StakerFacet {
 
         require(success, "Sending money failed");
 
-        balances[msg.sender][_poolId] = 0;
+        ds.balances[msg.sender][_poolId] = 0;
 
         emit PoolWithdraw(_poolId, msg.sender);
     }
@@ -119,21 +132,27 @@ contract StakerFacet {
         poolIsEnded(_poolId)
         reentrancyGuard()
     {
-        require(!pools[_poolId].executed, "The pool has already been executed");
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+
         require(
-            pools[_poolId].totalStaked >= pools[_poolId].threshold,
+            !ds.pools[_poolId].executed,
+            "The pool has already been executed"
+        );
+        require(
+            ds.pools[_poolId].totalStaked >= ds.pools[_poolId].threshold,
             "The pool didnt reach the threshold amout, go withdraw your ethers using withdraw function"
         );
 
-        uint256 amountToWithdraw = pools[_poolId].totalStaked;
+        uint256 amountToWithdraw = ds.pools[_poolId].totalStaked;
         (bool success, ) =
-            pools[_poolId].sendTo.call{value: amountToWithdraw, gas: gasleft()}(
-                ""
-            );
+            ds.pools[_poolId].sendTo.call{
+                value: amountToWithdraw,
+                gas: gasleft()
+            }("");
 
         require(success, "Sending money failed");
 
-        pools[_poolId].executed = true;
+        ds.pools[_poolId].executed = true;
 
         emit PoolExecuted(_poolId);
     }
@@ -144,25 +163,12 @@ contract StakerFacet {
         poolExists(_poolId)
         returns (bool)
     {
-        if (balances[_addr][_poolId] > 0) {
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+
+        if (ds.balances[_addr][_poolId] > 0) {
             return true;
         } else {
             return false;
-        }
-    }
-
-    function timeleft(uint256 _poolId)
-        public
-        view
-        poolExists(_poolId)
-        returns (uint256)
-    {
-        int256 timel =
-            int256(pools[_poolId].deadline) - int256(block.timestamp);
-        if (timel > 0) {
-            return uint256(timel);
-        } else {
-            return 0;
         }
     }
 

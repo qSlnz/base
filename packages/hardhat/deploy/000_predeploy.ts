@@ -15,5 +15,4 @@ const func: DeployFunction = async function ({ deployments, config }) {
     );
 };
 
-
 export default func;
