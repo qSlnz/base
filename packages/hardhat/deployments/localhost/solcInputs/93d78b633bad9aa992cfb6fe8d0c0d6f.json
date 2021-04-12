@@ -1,0 +1,38 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/facets/StakerFacet.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.3;\n\nimport \"./../storages/PoolsStorage.sol\";\n\ncontract StakerFacet {\n    /**********\n     * EVENTS *\n     **********/\n\n    event Stake(\n        uint256 indexed poolId,\n        address indexed staker,\n        uint256 indexed amount\n    );\n    event PoolCreation(uint256 indexed poolId, address indexed staker);\n    event PoolExecuted(uint256 indexed poolId);\n    event PoolWithdraw(uint256 indexed poolId, address indexed staker);\n\n    /*************\n     * MODIFIERS *\n     *************/\n\n    modifier poolExists(uint256 _poolId) {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n        require(_poolId < ds.poolCount, \"Wtf bro this pool has never existed\");\n        _;\n    }\n\n    modifier poolIsEnded(uint256 _poolId) {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n        require(\n            ds.pools[_poolId].deadline < block.timestamp,\n            \"This pool is live\"\n        );\n        _;\n    }\n\n    modifier poolIsLive(uint256 _poolId) {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n        require(\n            ds.pools[_poolId].deadline >= block.timestamp,\n            \"This pool is done\"\n        );\n        _;\n    }\n\n    modifier reentrancyGuard() {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n        require(!ds.lock, \"Liar! Cheater! Thief!\");\n        ds.lock = true;\n        _;\n        ds.lock = false;\n    }\n\n    /*************\n     * FUNCTIONS *\n     *************/\n\n    /* return poolid */\n    function createPool(\n        uint256 _threshold,\n        uint256 _deadline,\n        address payable _sendTo\n    ) public returns (uint256) {\n        require(_deadline > 0);\n        require(_sendTo != address(0));\n\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n\n        uint256 poolId = ds.poolCount;\n        ds.poolCount++;\n\n        PoolsStorage.Pool memory newPool;\n        newPool.threshold = _threshold * 1 wei;\n        newPool.deadline = block.timestamp + _deadline * 1 seconds;\n        newPool.executed = false;\n        newPool.sendTo = _sendTo;\n\n        ds.pools[poolId] = newPool;\n\n        emit PoolCreation(poolId, msg.sender);\n\n        return poolId;\n    }\n\n    function stake(uint256 _poolId)\n        public\n        payable\n        poolExists(_poolId)\n        poolIsLive(_poolId)\n    {\n        require(msg.value > 0, \"Gimme yo money\");\n\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n\n        ds.balances[msg.sender][_poolId] += msg.value;\n        ds.pools[_poolId].totalStaked += msg.value;\n\n        emit Stake(_poolId, msg.sender, msg.value);\n    }\n\n    function withdraw(uint256 _poolId)\n        public\n        poolExists(_poolId)\n        poolIsEnded(_poolId)\n        reentrancyGuard()\n    {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n\n        require(\n            ds.pools[_poolId].totalStaked < ds.pools[_poolId].threshold,\n            \"The pool is a success, your ethers are mine hahaha.\"\n        );\n\n        uint256 amountToWithdraw = ds.balances[msg.sender][_poolId];\n\n        require(amountToWithdraw > 0, \"Nothing you can withdraw here\");\n\n        (bool success, ) = msg.sender.call{value: amountToWithdraw}(\"\");\n\n        require(success, \"Sending money failed\");\n\n        ds.balances[msg.sender][_poolId] = 0;\n\n        emit PoolWithdraw(_poolId, msg.sender);\n    }\n\n    function execute(uint256 _poolId)\n        public\n        poolExists(_poolId)\n        poolIsEnded(_poolId)\n        reentrancyGuard()\n    {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n\n        require(\n            !ds.pools[_poolId].executed,\n            \"The pool has already been executed\"\n        );\n        require(\n            ds.pools[_poolId].totalStaked >= ds.pools[_poolId].threshold,\n            \"The pool didnt reach the threshold amout, go withdraw your ethers using withdraw function\"\n        );\n\n        uint256 amountToWithdraw = ds.pools[_poolId].totalStaked;\n        (bool success, ) =\n            ds.pools[_poolId].sendTo.call{\n                value: amountToWithdraw,\n                gas: gasleft()\n            }(\"\");\n\n        require(success, \"Sending money failed\");\n\n        ds.pools[_poolId].executed = true;\n\n        emit PoolExecuted(_poolId);\n    }\n\n    function isParticipatingTo(uint256 _poolId, address _addr)\n        public\n        view\n        poolExists(_poolId)\n        returns (bool)\n    {\n        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();\n\n        if (ds.balances[_addr][_poolId] > 0) {\n            return true;\n        } else {\n            return false;\n        }\n    }\n\n    // TODO > handle case MAX_UINT256 reached\n    // Question: I use uint256, but if I use uint64 for example, I will use less gas on smartcontract creation and method call that use it?\n}\n"
+    },
+    "contracts/storages/PoolsStorage.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity >=0.8.3;\n\nlibrary PoolsStorage {\n    bytes32 constant STORAGE_POSITION = keccak256(\"myapp.pools\");\n\n    struct Pool {\n        uint256 threshold;\n        uint256 deadline;\n        uint256 totalStaked;\n        address payable sendTo;\n        bool executed;\n    }\n\n    struct DiamondStorage {\n        uint256 poolCount;\n        bool lock;\n        mapping(uint256 => Pool) pools;\n        mapping(address => mapping(uint256 => uint256)) balances;\n    }\n\n    function get() internal pure returns (DiamondStorage storage diamond) {\n        bytes32 position = STORAGE_POSITION;\n        assembly {\n            diamond.slot := position\n        }\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

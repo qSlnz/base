@@ -2,14 +2,16 @@ import "@typechain/hardhat";
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
 import "@typechain/ethers-v5";
-import 'hardhat-deploy';
-import "hardhat-deploy-ethers";
+import "hardhat-deploy";
 
-import { HardhatUserConfig, NetworksUserConfig, SolidityUserConfig } from "hardhat/types";
+import {
+    HardhatUserConfig,
+    NetworksUserConfig,
+    SolidityUserConfig,
+} from "hardhat/types";
 
 import * as fs from "fs";
 import * as dotenv from "dotenv";
-
 
 /* Handle .env variables in the root of hardhat folder */
 dotenv.config();
@@ -34,7 +36,9 @@ let mnemonic = (): string => {
     } catch (e) {
         // @ts-ignore
         if (defaultNetwork !== "localhost" && defaultNetwork !== "hardhat") {
-            console.log("☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.")
+            console.log(
+                "☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.",
+            );
         }
     }
 
@@ -46,7 +50,7 @@ const masterAppAccount: string = mnemonic();
 const namedAccounts = {
     deployer: 0,
     proxyOwner: 1,
-    admin: '0x5B9d721f482E60efA99e555Cb59c7DBF4Df15Dc7',
+    admin: "0x5B9d721f482E60efA99e555Cb59c7DBF4Df15Dc7",
 };
 
 /************
@@ -88,14 +92,14 @@ const networks: NetworksUserConfig = {
         },
     },
     xdai: {
-        url: 'https://rpc.xdaichain.com/',
+        url: "https://rpc.xdaichain.com/",
         gasPrice: 1000000000,
         accounts: {
             mnemonic: masterAppAccount,
         },
     },
     matic: {
-        url: 'https://rpc-mainnet.maticvigil.com/',
+        url: "https://rpc-mainnet.maticvigil.com/",
         gasPrice: 1000000000,
         accounts: {
             mnemonic: masterAppAccount,
@@ -107,9 +111,9 @@ const networks: NetworksUserConfig = {
         url: "https://rpc-mumbai.maticvigil.com/",
         accounts: {
             mnemonic: masterAppAccount,
-        }
-    }
-}
+        },
+    },
+};
 
 /*************
  * COMPILERS *
@@ -117,43 +121,43 @@ const networks: NetworksUserConfig = {
 let appCompilers: SolidityUserConfig = {
     compilers: [
         {
+            version: "0.8.3",
+            settings: {
+                optimizer: {
+                    enabled: true,
+                    runs: 200,
+                },
+            },
+        },
+        {
             version: "0.5.5",
             settings: {
                 optimizer: {
                     enabled: true,
-                    runs: 200
-                }
-            }
+                    runs: 200,
+                },
+            },
         },
         {
             version: "0.6.7",
             settings: {
                 optimizer: {
                     enabled: true,
-                    runs: 200
-                }
-            }
+                    runs: 200,
+                },
+            },
         },
         {
-            version: "0.7.4",
+            version: "0.7.6",
             settings: {
                 optimizer: {
                     enabled: true,
-                    runs: 200
-                }
-            }
+                    runs: 200,
+                },
+            },
         },
-        {
-            version: "0.8.3",
-            settings: {
-                optimizer: {
-                    enabled: true,
-                    runs: 200
-                }
-            }
-        },
-    ]
-}
+    ],
+};
 
 /**********
  * EXPORT *
@@ -166,10 +170,10 @@ const config: HardhatUserConfig = {
     solidity: appCompilers,
     typechain: {
         outDir: "artifacts/typechain",
-        target: "ethers-v5"
+        target: "ethers-v5",
     },
     mocha: {
-        timeout: 2000
+        timeout: 2000,
     },
     paths: {
         artifacts: "artifacts",
@@ -177,13 +181,13 @@ const config: HardhatUserConfig = {
         tests: "test",
         cache: "cache",
         deploy: "deploy",
-        deployments: "deployments"
-    }
+        deployments: "deployments",
+    },
 };
 
 const frontEndPathConfig: { [key: string]: string } = {
     react: "../react-app/src/utils/contracts",
-    subgraph: "../subgraph/contracts"
+    subgraph: "../subgraph/contracts",
 };
 
 export { frontEndPathConfig };
