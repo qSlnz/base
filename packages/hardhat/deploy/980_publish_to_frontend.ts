@@ -1,11 +1,13 @@
-import chalk from 'chalk';
-import { DeployFunction, Deployment, DeployResult } from 'hardhat-deploy/types';
-import { copyFile, existsSync, mkdirSync, writeFileSync } from 'fs';
-import { frontEndPathConfig } from '../hardhat.config';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { copySync } from 'fs-extra';
+import chalk from "chalk";
+import { DeployFunction, Deployment, DeployResult } from "hardhat-deploy/types";
+import { existsSync, mkdirSync, rmdirSync, writeFileSync } from "fs";
+import { frontEndPathConfig } from "../hardhat.config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { copySync } from "fs-extra";
 
-const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) => {
+const buildContractsUniqueAccessPointFile = async (
+    contractNameList: string[],
+) => {
     // build import
     let contractsFile = "import { ethers } from 'ethers';\nimport { ";
 
@@ -26,7 +28,7 @@ const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) =
     contractNameList.forEach((contractName) => {
         ["Reader", "Writer"].forEach((option) => {
             contractsFile += `\n\t${contractName}${option}: ${contractName},`;
-        })
+        });
     });
 
     contractsFile += "\n};\n\n";
@@ -36,19 +38,21 @@ const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) =
 
     contractNameList.forEach((contractName) => {
         ["Reader", "Writer"].forEach((option) => {
-            contractsFile += `\n\t${contractName}${option}: new ethers.Contract(${contractName}Data.address, ${contractName}Data.abi) as ${contractName},`;
-
-        })
+            contractsFile += `\n\t${contractName}${option}: new ethers.Contract(DiamondData.address, ${contractName}Data.abi) as ${contractName},`;
+        });
     });
 
     contractsFile += "\n};\n\n";
 
     // build connectAllContracts function
-    [["Reader", "Provider"], ["Writer", "Signer"]].forEach((option) => {
+    [
+        ["Reader", "Provider"],
+        ["Writer", "Signer"],
+    ].forEach((option) => {
         contractsFile += `const connectAllContracts${option[0]} = (${option[1]}: ethers.providers.JsonRpc${option[1]}) => {`;
 
         contractNameList.forEach((contractName) => {
-            contractsFile += `\n\tcontracts.${contractName}${option[0]} = contracts.${contractName}${option[0]}.connect(${option[1]});`
+            contractsFile += `\n\tcontracts.${contractName}${option[0]} = contracts.${contractName}${option[0]}.connect(${option[1]});`;
         });
 
         contractsFile += "\n};\n\n";
@@ -61,19 +65,36 @@ const buildContractsUniqueAccessPointFile = async (contractNameList: string[]) =
 };
 
 // publish address & abi in one ts file and export it to react frontend
-const publishDeploymentInformation = async (hre: HardhatRuntimeEnvironment, contractName: string): Promise<boolean> => {
+const publishDeploymentInformation = async (
+    hre: HardhatRuntimeEnvironment,
+    contractName: string,
+): Promise<boolean> => {
     hre.deployments.log(
         "\t 🚢",
         chalk.yellow("PUBLISH"),
         "(abi, address)",
-        chalk.cyan(contractName)
+        chalk.cyan(contractName),
     );
 
-    let contractInformation: Deployment = await hre.deployments.get(contractName);
+    let contractInformation: Deployment = await hre.deployments.get(
+        contractName,
+    );
 
-    let toExportData = "const " + contractName + "Data={address:" + JSON.stringify(contractInformation.address) + ",abi:'" + JSON.stringify(contractInformation.abi) + "'};export default " + contractName + "Data;";
+    let toExportData =
+        "const " +
+        contractName +
+        "Data={address:" +
+        JSON.stringify(contractInformation.address) +
+        ",abi:'" +
+        JSON.stringify(contractInformation.abi) +
+        "'};export default " +
+        contractName +
+        "Data;";
 
-    writeFileSync(`${frontEndPathConfig["react"]}/${contractName}.data.ts`, toExportData);
+    writeFileSync(
+        `${frontEndPathConfig["react"]}/${contractName}.data.ts`,
+        toExportData,
+    );
 
     return true;
 };
@@ -82,33 +103,39 @@ const buildNetworkInformationFile = async (hre: HardhatRuntimeEnvironment) => {
     hre.deployments.log(
         "\t 🚢",
         chalk.yellow("PUBLISH"),
-        "network information"
+        "network information",
     );
 
     let chainId = await hre.getChainId();
     let networkInformationFile = "";
 
-    networkInformationFile += `let deployedNetwork = {\n\tchainId: ${await hre.getChainId()},\n\tname: "${hre.network.name}"\n}`;
-    networkInformationFile += "\n\nexport default deployedNetwork;"
+    networkInformationFile += `let deployedNetwork = {\n\tchainId: ${await hre.getChainId()},\n\tname: "${
+        hre.network.name
+    }"\n}`;
+    networkInformationFile += "\n\nexport default deployedNetwork;";
 
-    writeFileSync(`${frontEndPathConfig["react"]}/network.data.ts`, networkInformationFile);
-}
-
+    writeFileSync(
+        `${frontEndPathConfig["react"]}/network.data.ts`,
+        networkInformationFile,
+    );
+};
 
 const func: DeployFunction = async function (hre) {
     hre.deployments.log(
-        chalk.bgYellow.black("\n\n 🌊 PUBLISHING TO FRONTENDS ")
+        chalk.bgYellow.black("\n\n 🌊 PUBLISHING TO FRONTENDS "),
     );
 
     for (let key in frontEndPathConfig) {
         hre.deployments.log(
             "\t 🚗 " + key.toUpperCase() + " PATH:",
-            chalk.blue(frontEndPathConfig[key])
+            chalk.blue(frontEndPathConfig[key]),
         );
 
-        if (!existsSync(frontEndPathConfig[key])) {
-            mkdirSync(frontEndPathConfig[key]);
+        if (existsSync(frontEndPathConfig[key])) {
+            rmdirSync(frontEndPathConfig[key], { recursive: true });
         }
+
+        mkdirSync(frontEndPathConfig[key]);
     }
 
     let contractsList: string[] = [];
@@ -123,7 +150,14 @@ const func: DeployFunction = async function (hre) {
         publishDeploymentInformation(hre, contractName);
 
         // build index.ts file to easily access data
-        indexFile += "export { default as " + contractName + "Data " + " } from './" + contractName + ".data" + "';\n";
+        indexFile +=
+            "export { default as " +
+            contractName +
+            "Data " +
+            " } from './" +
+            contractName +
+            ".data" +
+            "';\n";
     });
 
     indexFile += "export { default as contracts } from './Contracts';\n";
@@ -133,14 +167,15 @@ const func: DeployFunction = async function (hre) {
 
     // build information about network
     buildNetworkInformationFile(hre);
-    indexFile += 'export { default as deployedNetwork } from "./network.data";\n';
+    indexFile +=
+        'export { default as deployedNetwork } from "./network.data";\n';
 
     writeFileSync(`${frontEndPathConfig["react"]}/index.ts`, indexFile);
 
     hre.deployments.log(
         "\t 🚢",
         chalk.yellow("PUBLISH"),
-        "typechained contracts"
+        "typechained contracts",
     );
 
     // copy typechained artifacts of deployed contract

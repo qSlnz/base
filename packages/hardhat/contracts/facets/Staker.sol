@@ -3,7 +3,7 @@ pragma solidity ^0.8.3;
 
 import "./../storages/PoolsStorage.sol";
 
-contract StakerFacet {
+contract Staker {
     /**********
      * EVENTS *
      **********/
@@ -172,6 +172,23 @@ contract StakerFacet {
         }
     }
 
+    function getPoolCount()
+        public
+        view
+        returns (uint256)
+    {
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+        return ds.poolCount;
+    }
+
+    function getPool(uint256 _poolId)
+        public
+        view
+        returns (PoolsStorage.Pool)
+    {
+        PoolsStorage.DiamondStorage storage ds = PoolsStorage.get();
+        return ds.pools[_poolId];
+    }
     // TODO > handle case MAX_UINT256 reached
     // Question: I use uint256, but if I use uint64 for example, I will use less gas on smartcontract creation and method call that use it?
 }

@@ -1,12 +1,7 @@
 import chalk from "chalk";
+import { BytesLike } from "ethers";
 import { DeployFunction, DeployResult } from "hardhat-deploy/types";
-import { hrtime } from "node:process";
-import {
-    Diamond,
-    DiamondCutFacet,
-    DiamondCutFacet__factory,
-    IDiamondCut,
-} from "../artifacts/typechain";
+import { IDiamondCut } from "../artifacts/typechain";
 
 const func: DeployFunction = async function ({
     getNamedAccounts,
@@ -15,12 +10,10 @@ const func: DeployFunction = async function ({
 }) {
     const { deployer } = await getNamedAccounts();
 
-    let stakerFacet: DeployResult = await deployments.deploy("StakerFacet", {
+    let stakerFacet: DeployResult = await deployments.deploy("Staker", {
         from: deployer,
         log: true,
     });
-
-    deployments.diamond;
 
     deployments.log(
         "\t\t 📄",
@@ -31,12 +24,13 @@ const func: DeployFunction = async function ({
     );
 
     // récupérer address du diamond
-    let diamondAddress: string = await (await deployments.get("Diamond"))
-        .address;
+    let diamondAddress: string = await (
+        await ethers.getContract("Diamond", deployer)
+    ).address;
 
-    // récupérer la liste des function de la facet
+    // récupérer la liste des selecteurs de la facet
     let facetInterface = new ethers.utils.Interface(stakerFacet.abi);
-    let selectorList: string[] = [];
+    let selectorList: BytesLike[] = [];
 
     console.log("Start");
     for (let f in facetInterface.functions) {
@@ -51,8 +45,6 @@ const func: DeployFunction = async function ({
     }
     console.log("End");
 
-    // Mettre la liste des facets sous la bonne forme
-
     // recupérer l'abi de dioamoncutfacet
     let diamondCutFacetABI = await (await deployments.get("DiamondCutFacet"))
         .abi;
@@ -66,13 +58,43 @@ const func: DeployFunction = async function ({
     }
 
     const diamondCutParams = [
-        [stakerFacet.address, FacetCutAction.Add, ["0x1f931c1c"]],
+        {
+            facetAddress: stakerFacet.address,
+            action: FacetCutAction.Add,
+            functionSelectors: selectorList,
+        },
     ];
 
-    let diamondCutNoType: unknown = new ethers.Contract(
-        diamondAddress,
-        diamondCutFacetABI,
+    const diamondContract = await ethers.getContract("Diamond", deployer);
+
+    const diamondCutContract = await ethers.getContract(
+        "DiamondCutFacet",
+        deployer,
     );
+    const diamondCutContractCo = (diamondCutContract.attach(
+        diamondAddress,
+    ) as unknown) as IDiamondCut;
+    console.log(diamondAddress);
+    console.log(deployer);
+
+    let t = "0x";
+    for (let i = 0; i < 100; i++) {
+        if (ethers.utils.isAddress(t)) {
+            break;
+        }
+
+        t += "0";
+    }
+
+    try {
+        await diamondCutContractCo.diamondCut(
+            diamondCutParams,
+            t,
+            ethers.utils.toUtf8Bytes(""),
+        );
+    } catch (e) {
+        console.log(e);
+    }
 };
 
 export default func;
